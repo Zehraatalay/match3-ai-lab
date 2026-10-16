@@ -37,3 +37,5 @@ def test_invalid_dimensions():
 def test_invalid_color_count():
     with pytest.raises(ValueError):
         generate_random_board(8, 8, 2)
+
+
