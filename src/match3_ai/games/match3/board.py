@@ -34,7 +34,7 @@ class BoardState:
 
         self.tiles = self.tiles.copy()
         self.cell_mask = self.cell_mask.copy()
-        
+
     @property
     def shape(self) -> tuple[int, int]:
         return self.tiles.shape
