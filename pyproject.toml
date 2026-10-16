@@ -9,6 +9,8 @@ description = "A modular Match-3 AI research environment"
 requires-python = ">=3.11"
 dependencies = [
     "numpy>=1.26",
+    "gymnasium>=1.0,<2",
+
 ]
 
 [project.optional-dependencies]

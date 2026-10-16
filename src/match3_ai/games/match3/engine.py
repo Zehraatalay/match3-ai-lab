@@ -11,6 +11,10 @@ from match3_ai.games.match3.mechanics import (
     refill_board,
 )
 from match3_ai.games.match3.moves import is_valid_swap
+from match3_ai.games.match3.recovery import (
+    is_dead_board,
+    recover_dead_board,
+)
 from match3_ai.games.match3.rules import all_find_matches
 
 Position = tuple[int, int]
@@ -23,6 +27,7 @@ class StepResult:
     valid: bool
     cleared_tiles: int
     cascade_count: int
+    reshuffled: bool = False
 
 
 class Match3Engine:
@@ -98,9 +103,20 @@ class Match3Engine:
             cell_mask=mask,
         )
 
+        reshuffled = False
+
+        if is_dead_board(new_state):
+            new_state = recover_dead_board(
+                state=new_state,
+                rng=self.rng,
+            )
+
+            reshuffled = True
+
         return StepResult(
             state=new_state,
             valid=True,
             cleared_tiles=total_cleared,
             cascade_count=cascade_count,
+            reshuffled=reshuffled,
         )

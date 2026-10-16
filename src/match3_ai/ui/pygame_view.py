@@ -145,8 +145,11 @@ class Match3Viewer:
             self.state = result.state
 
             self.message = (
-                f"Cleared: {result.cleared_tiles} | Resolutions: {result.cascade_count}"
+                f"cleared: {result.cleared_tiles} | resolutions: {result.cascade_count}"
             )
+
+            if result.reshuffled:
+                self.message += " | reshuffled!"
 
         else:
             self.message = "Invalid move."

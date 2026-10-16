@@ -1,8 +1,10 @@
 import numpy as np
 import pytest
 
+import match3_ai.games.match3.engine as engine_module
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.engine import Match3Engine
+from match3_ai.games.match3.recovery import is_dead_board
 
 
 def make_state() -> BoardState:
@@ -133,3 +135,78 @@ def test_invalid_max_cascades(max_cascades):
             num_colors=5,
             max_cascades=max_cascades,
         )
+
+
+def test_valid_step_returns_playable_board():
+    state = make_state()
+
+    engine = Match3Engine(
+        num_colors=3,
+        seed=42,
+    )
+
+    result = engine.step(
+        state,
+        ((0, 1), (1, 1)),
+    )
+
+    assert result.valid
+    assert not is_dead_board(result.state)
+
+
+def test_invalid_step_does_not_reshuffle():
+    state = make_state()
+
+    engine = Match3Engine(
+        num_colors=3,
+        seed=42,
+    )
+
+    result = engine.step(
+        state,
+        ((0, 0), (2, 2)),
+    )
+
+    assert not result.valid
+    assert result.reshuffled is False
+
+
+def test_engine_triggers_recovery(monkeypatch):
+    state = make_state()
+
+    engine = Match3Engine(
+        num_colors=3,
+        seed=42,
+    )
+
+    recovery_called = False
+
+    def fake_is_dead_board(state):
+        return True
+
+    def fake_recover_dead_board(state, rng):
+        nonlocal recovery_called
+
+        recovery_called = True
+        return state.copy()
+
+    monkeypatch.setattr(
+        engine_module,
+        "is_dead_board",
+        fake_is_dead_board,
+    )
+
+    monkeypatch.setattr(
+        engine_module,
+        "recover_dead_board",
+        fake_recover_dead_board,
+    )
+
+    result = engine.step(
+        state,
+        ((0, 1), (1, 1)),
+    )
+
+    assert result.valid
+    assert recovery_called
+    assert result.reshuffled is True
