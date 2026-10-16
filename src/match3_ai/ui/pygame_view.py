@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import pygame
 
+from match3_ai.games.match3.engine import Match3Engine
 from match3_ai.games.match3.generator import generate_playable_board
-from match3_ai.games.match3.moves import find_valid_moves, is_valid_swap
+from match3_ai.games.match3.moves import find_valid_moves
 
-# Display configuration
+# display configuration
 CELL_SIZE = 72
 PADDING = 24
 HEADER_HEIGHT = 110
@@ -40,13 +41,19 @@ class Match3Viewer:
         self.cols = cols
         self.num_colors = num_colors
         self.seed = seed
-
+        # board mevcut state
         self.state = generate_playable_board(
             rows=rows,
             cols=cols,
             num_colors=num_colors,
             seed=seed,
         )
+        # movements isleyen game engine
+        self.engine = Match3Engine(
+            num_colors=num_colors,
+            seed=seed,
+        )
+        # burada seed ayni olsa da generator ve engine farkli RNG objects kullaniyor
 
         self.selected: tuple[int, int] | None = None
         self.show_hints = False
@@ -71,6 +78,11 @@ class Match3Viewer:
         self.state = generate_playable_board(
             rows=self.rows,
             cols=self.cols,
+            num_colors=self.num_colors,
+            seed=self.seed,
+        )
+
+        self.engine = Match3Engine(
             num_colors=self.num_colors,
             seed=self.seed,
         )
@@ -124,13 +136,17 @@ class Match3Viewer:
 
         self.selected = None
 
-        if is_valid_swap(self.state, first, second):
-            self.state.tiles[first], self.state.tiles[second] = (
-                self.state.tiles[second],
-                self.state.tiles[first],
-            )
+        result = self.engine.step(
+            self.state,
+            (first, second),
+        )
 
-            self.message = f"Valid swap: {first} <-> {second}"
+        if result.valid:
+            self.state = result.state
+
+            self.message = (
+                f"Cleared: {result.cleared_tiles} | Resolutions: {result.cascade_count}"
+            )
 
         else:
             self.message = "Invalid move."
