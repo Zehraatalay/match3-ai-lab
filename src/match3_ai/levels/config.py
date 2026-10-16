@@ -15,8 +15,16 @@ class LevelConfig:
         if isinstance(self.cols, bool) or type(self.cols) is not int or self.cols < 3:
             raise ValueError("cols must be an integer >= 3")
 
-        if isinstance(self.num_colors, bool) or type(self.num_colors) is not int or self.num_colors < 3:
+        if (
+            isinstance(self.num_colors, bool)
+            or type(self.num_colors) is not int
+            or self.num_colors < 3
+        ):
             raise ValueError("num_colors must be an integer >= 3")
 
-        if isinstance(self.move_limit, bool) or type(self.move_limit) is not int or self.move_limit <= 0:
+        if (
+            isinstance(self.move_limit, bool)
+            or type(self.move_limit) is not int
+            or self.move_limit <= 0
+        ):
             raise ValueError("move_limit must be a positive integer")

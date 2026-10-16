@@ -8,7 +8,7 @@ def test_valid_level_config():
         rows=8,
         cols=8,
         num_colors=5,
-        move_limit=20
+        move_limit=20,
     )
 
     assert config.rows == 8
@@ -28,14 +28,14 @@ def test_valid_level_config():
         ("rows", 3.5),
         ("cols", True),
         ("num_colors", "5"),
-    ]
+    ],
 )
 def test_invalid_level_config(field, value):
     params = {
         "rows": 8,
         "cols": 8,
         "num_colors": 5,
-        "move_limit": 20
+        "move_limit": 20,
     }
 
     params[field] = value
@@ -49,7 +49,7 @@ def test_config_is_immutable():
         rows=8,
         cols=8,
         num_colors=5,
-        move_limit=20
+        move_limit=20,
     )
 
     with pytest.raises(AttributeError):
