@@ -3,10 +3,11 @@ import pytest
 
 from match3_ai.games.match3.generator import generate_playable_board
 from match3_ai.games.match3.moves import find_valid_moves
-from match3_ai.games.match3.rules import all_find_matches
+from match3_ai.games.match3.pattern_detection import detect_patterns
+from match3_ai.games.match3.specials import SpecialType
 
 
-def test_generated_board_has_no_initial_matches():
+def test_generated_board_has_no_initial_patterns():
     state = generate_playable_board(
         rows=8,
         cols=8,
@@ -14,7 +15,7 @@ def test_generated_board_has_no_initial_matches():
         seed=42,
     )
 
-    assert all_find_matches(state.tiles) == set()
+    assert detect_patterns(state.tiles) == []
 
 
 def test_generated_board_has_valid_moves():
@@ -51,7 +52,7 @@ def test_generated_board_is_playable(
     )
 
     assert state.shape == (rows, cols)
-    assert not all_find_matches(state.tiles)
+    assert not detect_patterns(state.tiles)
     assert find_valid_moves(state)
 
 
@@ -97,3 +98,34 @@ def test_different_seeds_can_produce_different_boards():
     state_b = generate_playable_board(8, 8, 5, seed=123)
 
     assert not np.array_equal(state_a.tiles, state_b.tiles)
+
+
+def test_generated_board_has_no_special_tiles():
+    state = generate_playable_board(
+        rows=8,
+        cols=8,
+        num_colors=5,
+        seed=42,
+    )
+
+    assert np.all(state.specials == SpecialType.NONE)
+
+
+def test_same_seed_produces_same_board():
+    state_a = generate_playable_board(
+        rows=8,
+        cols=8,
+        num_colors=5,
+        seed=42,
+    )
+
+    state_b = generate_playable_board(
+        rows=8,
+        cols=8,
+        num_colors=5,
+        seed=42,
+    )
+
+    assert np.array_equal(state_a.tiles, state_b.tiles)
+    assert np.array_equal(state_a.cell_mask, state_b.cell_mask)
+    assert np.array_equal(state_a.specials, state_b.specials)

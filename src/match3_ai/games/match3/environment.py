@@ -32,8 +32,8 @@ class Match3Env(gym.Env):
         if type(cols) is not int or cols < 3:
             raise ValueError("cols must be an integer >= 3")
 
-        if type(num_colors) is not int or not 3 <= num_colors <= 255:
-            raise ValueError("num_colors must be an integer between 3 and 255")
+        if type(num_colors) is not int or not 3 <= num_colors <= 254:
+            raise ValueError("num_colors must be an integer between 3 and 254")
 
         if type(move_limit) is not int or move_limit <= 0:
             raise ValueError("move_limit must be a positive integer")

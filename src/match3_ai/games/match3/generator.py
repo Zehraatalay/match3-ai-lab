@@ -5,7 +5,7 @@ from match3_ai.games.match3.board import (
     generate_random_board,
 )
 from match3_ai.games.match3.moves import find_valid_moves
-from match3_ai.games.match3.rules import all_find_matches
+from match3_ai.games.match3.pattern_detection import detect_patterns
 
 
 def generate_playable_board(
@@ -29,7 +29,8 @@ def generate_playable_board(
             seed=board_seed,
         )
 
-        if all_find_matches(tiles):  # board baslangicta match icermiyor
+        # board baslangicta match icermiyor
+        if detect_patterns(tiles):
             continue
 
         cell_mask = np.ones((rows, cols), dtype=np.bool_)

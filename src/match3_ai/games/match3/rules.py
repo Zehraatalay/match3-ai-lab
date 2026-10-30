@@ -1,6 +1,6 @@
 import numpy as np
 
-EMPTY = 0
+from match3_ai.games.match3.constants import COLORLESS, EMPTY
 
 
 def row_find_matches(board: np.ndarray) -> set[tuple[int, int]]:
@@ -14,7 +14,7 @@ def row_find_matches(board: np.ndarray) -> set[tuple[int, int]]:
             if current == cols or board[row, current] != board[row, start]:
                 match_length = current - start
 
-                if match_length >= 3 and board[row, start] != EMPTY:
+                if match_length >= 3 and board[row, start] not in (EMPTY, COLORLESS):
                     coordinates = {(row, col) for col in range(start, current)}
 
                     result.update(coordinates)
@@ -35,7 +35,7 @@ def col_find_matches(board: np.ndarray) -> set[tuple[int, int]]:
             if current == rows or board[current, col] != board[start, col]:
                 match_length = current - start
 
-                if match_length >= 3 and board[start, col] != EMPTY:
+                if match_length >= 3 and board[start, col] not in (EMPTY, COLORLESS):
                     coordinates = {(row, col) for row in range(start, current)}
 
                     result.update(coordinates)

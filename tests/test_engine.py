@@ -4,7 +4,9 @@ import pytest
 import match3_ai.games.match3.engine as engine_module
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.engine import Match3Engine
+from match3_ai.games.match3.pattern_detection import detect_patterns
 from match3_ai.games.match3.recovery import is_dead_board
+from match3_ai.games.match3.specials import SpecialType
 
 
 def make_state() -> BoardState:
@@ -44,6 +46,9 @@ def test_valid_swap_resolves_matches():
 
     assert np.all(result.state.tiles > 0)
 
+    # engine must resolve all line and square matches.
+    assert detect_patterns(result.state.tiles) == []
+
 
 def test_invalid_swap_does_not_change_state():
     state = make_state()
@@ -72,6 +77,8 @@ def test_engine_does_not_mutate_input_state():
     state = make_state()
 
     original_tiles = state.tiles.copy()
+    original_specials = state.specials.copy()
+    original_mask = state.cell_mask.copy()
 
     engine = Match3Engine(
         num_colors=3,
@@ -83,10 +90,9 @@ def test_engine_does_not_mutate_input_state():
         ((0, 1), (1, 1)),
     )
 
-    assert np.array_equal(
-        state.tiles,
-        original_tiles,
-    )
+    assert np.array_equal(state.tiles, original_tiles)
+    assert np.array_equal(state.specials, original_specials)
+    assert np.array_equal(state.cell_mask, original_mask)
 
 
 def test_same_seed_produces_same_result():
@@ -210,3 +216,83 @@ def test_engine_triggers_recovery(monkeypatch):
     assert result.valid
     assert recovery_called
     assert result.reshuffled is True
+
+
+def test_engine_resolves_square_match():
+    tiles = np.array(
+        [
+            [1, 1, 2],
+            [1, 2, 1],
+            [3, 2, 3],
+        ],
+        dtype=np.uint8,
+    )
+
+    state = BoardState(
+        tiles=tiles,
+        cell_mask=np.ones_like(tiles, dtype=bool),
+    )
+
+    # The starting board must not contain unresolved matches.
+    assert detect_patterns(state.tiles) == []
+
+    engine = Match3Engine(
+        num_colors=3,
+        seed=42,
+    )
+
+    result = engine.step(
+        state,
+        ((1, 1), (1, 2)),
+    )
+
+    assert result.valid is True
+    assert result.cleared_tiles >= 3
+    assert result.cascade_count >= 1
+
+    # All cascades must be resolved.
+    assert detect_patterns(result.state.tiles) == []
+
+
+def test_invalid_swap_preserves_specials():
+    tiles = np.array(
+        [
+            [1, 2, 3],
+            [3, 1, 2],
+            [2, 3, 1],
+        ],
+        dtype=np.uint8,
+    )
+
+    specials = np.zeros_like(tiles)
+    specials[0, 0] = SpecialType.ROCKET_HORIZONTAL
+
+    state = BoardState(
+        tiles=tiles,
+        specials=specials,
+        cell_mask=np.ones_like(tiles, dtype=bool),
+    )
+
+    engine = Match3Engine(
+        num_colors=3,
+        seed=42,
+    )
+
+    result = engine.step(
+        state,
+        ((0, 0), (2, 2)),
+    )
+
+    assert result.valid is False
+
+    assert np.array_equal(
+        result.state.tiles,
+        state.tiles,
+    )
+
+    assert np.array_equal(
+        result.state.specials,
+        state.specials,
+    )
+
+    assert result.state is not state
