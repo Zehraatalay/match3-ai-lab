@@ -19,6 +19,23 @@ class DamageSource(IntEnum):
 
 
 @dataclass(frozen=True, slots=True)
+class BlockerDamageEvent:
+    sources: frozenset[DamageSource]
+    cells: frozenset[tuple[int, int]]
+
+
+@dataclass(frozen=True, slots=True)
+class BlockerDamageRecord:
+    sources: frozenset[DamageSource]
+    position: tuple[int, int]
+    blocker_type: BlockerType
+    hit_order: int
+    previous_hp: int
+    remaining_hp: int
+    destroyed: bool
+
+
+@dataclass(frozen=True, slots=True)
 class BlockerProperties:
     contains_tile: bool
     allows_swap: bool

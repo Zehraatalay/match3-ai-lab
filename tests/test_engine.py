@@ -73,7 +73,7 @@ def test_match_under_ice_completes_through_gravity_and_refill():
     assert result.valid
     assert result.state.tiles[0, 0] != 0
     assert result.state.blockers[0, 0] == BlockerType.ICE
-    assert result.state.blocker_hp[0, 0] == 2
+    assert result.state.blocker_hp[0, 0] == 1
     assert detect_patterns(result.state.tiles) == []
 
 

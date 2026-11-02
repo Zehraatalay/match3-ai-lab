@@ -1,12 +1,83 @@
 import numpy as np
 
-from match3_ai.games.match3.blockers import BLOCKER_PROPERTIES
+from match3_ai.games.match3.blockers import (
+    BLOCKER_PROPERTIES,
+    BlockerDamageEvent,
+    BlockerDamageRecord,
+    BlockerType,
+)
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.constants import COLORLESS, EMPTY
 from match3_ai.games.match3.special_selection import SpecialCreation
 from match3_ai.games.match3.specials import SpecialType
 
 Position = tuple[int, int]
+
+
+def apply_blocker_damage(
+    state: BoardState,
+    events: tuple[BlockerDamageEvent, ...],
+) -> tuple[BoardState, tuple[BlockerDamageRecord, ...]]:
+    if not events or not np.any(state.blockers):
+        return state, ()
+
+    blockers = state.blockers
+    blocker_hp = state.blocker_hp
+    changed = False
+    records: list[BlockerDamageRecord] = []
+
+    for event in events:
+        for position in sorted(event.cells):
+            blocker_type = BlockerType(int(blockers[position]))
+
+            if blocker_type == BlockerType.NONE:
+                continue
+
+            properties = BLOCKER_PROPERTIES[blocker_type]
+
+            if not event.sources.intersection(properties.damage_sources):
+                continue
+
+            if not changed:
+                blockers = blockers.copy()
+                blocker_hp = blocker_hp.copy()
+                changed = True
+
+            previous_hp = int(blocker_hp[position])
+            remaining_hp = previous_hp - 1
+            destroyed = remaining_hp == 0
+
+            if destroyed:
+                blockers[position] = BlockerType.NONE
+                blocker_hp[position] = 0
+            else:
+                blocker_hp[position] = remaining_hp
+
+            records.append(
+                BlockerDamageRecord(
+                    sources=event.sources,
+                    position=position,
+                    blocker_type=blocker_type,
+                    hit_order=len(records),
+                    previous_hp=previous_hp,
+                    remaining_hp=remaining_hp,
+                    destroyed=destroyed,
+                )
+            )
+
+    if not changed:
+        return state, ()
+
+    return (
+        BoardState(
+            tiles=state.tiles,
+            specials=state.specials,
+            cell_mask=state.cell_mask,
+            blockers=blockers,
+            blocker_hp=blocker_hp,
+        ),
+        tuple(records),
+    )
 
 
 def clear_board_matches(

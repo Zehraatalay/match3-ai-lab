@@ -6,13 +6,17 @@ from dataclasses import dataclass
 import numpy as np
 
 from match3_ai.games.match3.board import BoardState
+from match3_ai.games.match3.blockers import (
+    BlockerDamageEvent,
+    DamageSource,
+)
 from match3_ai.games.match3.special_activation import (
     TileTransformation,
-    get_geometric_combination_cells,
-    get_special_effect_cells,
+    get_geometric_combination_passes,
+    get_special_effect_passes,
     light_ball_combination_transformations,
     light_ball_light_ball_cells,
-    propeller_combination_cells,
+    propeller_combination_effect_passes,
 )
 from match3_ai.games.match3.specials import SpecialType
 
@@ -32,6 +36,40 @@ class ActivationResult:
     effect_cells: frozenset[Position] = frozenset()
     activation_order: tuple[Position, ...] = ()
     activation_steps: tuple[SpecialActivationStep, ...] = ()
+    damage_events: tuple[BlockerDamageEvent, ...] = ()
+
+
+def _damage_source_for_special(special_type: SpecialType) -> DamageSource:
+    if special_type in (
+        SpecialType.ROCKET_HORIZONTAL,
+        SpecialType.ROCKET_VERTICAL,
+    ):
+        return DamageSource.ROCKET
+
+    if special_type == SpecialType.BOMB:
+        return DamageSource.BOMB
+
+    if special_type == SpecialType.PROPELLER:
+        return DamageSource.PROPELLER
+
+    if special_type == SpecialType.LIGHT_BALL:
+        return DamageSource.LIGHT_BALL
+
+    raise ValueError(f"unsupported special damage source: {special_type.name}")
+
+
+def _damage_events_for_passes(
+    special_types: set[SpecialType],
+    effect_passes: tuple[frozenset[Position], ...],
+) -> tuple[BlockerDamageEvent, ...]:
+    sources = frozenset(
+        _damage_source_for_special(special_type)
+        for special_type in special_types
+    )
+    return tuple(
+        BlockerDamageEvent(sources=sources, cells=effect_cells)
+        for effect_cells in effect_passes
+    )
 
 def resolve_special_activation(
     state: BoardState,
@@ -101,6 +139,7 @@ def _resolve_activation_queue(
     initial_position: Position | None = None,
     target_color: int | None = None,
     initial_effect_cells: set[Position] | None = None,
+    initial_damage_events: tuple[BlockerDamageEvent, ...] = (),
 ) -> ActivationResult:
     """
     resolve queued special activations and their chain reactions.
@@ -112,6 +151,7 @@ def _resolve_activation_queue(
     )
     activation_steps: list[SpecialActivationStep] = []
     activation_order: list[Position] = []
+    damage_events = list(initial_damage_events)
     while activation_queue:
         current_position = activation_queue.popleft()
         activation_order.append(current_position)
@@ -136,7 +176,7 @@ def _resolve_activation_queue(
                     affected_cells.add(current_position)
                     continue
 
-        effect_cells = get_special_effect_cells(
+        effect_passes = get_special_effect_passes(
             state=state,
             position=current_position,
             special_type=current_special,
@@ -144,11 +184,18 @@ def _resolve_activation_queue(
             target_color=current_target_color,
             excluded_positions=affected_cells,
         )
+        effect_cells = set().union(*effect_passes)
         activation_steps.append(
             SpecialActivationStep(
                 position=current_position,
                 special_type=current_special,
                 effect_cells=frozenset(effect_cells),
+            )
+        )
+        damage_events.extend(
+            _damage_events_for_passes(
+                {current_special},
+                effect_passes,
             )
         )
 
@@ -174,6 +221,7 @@ def _resolve_activation_queue(
         effect_cells=frozenset(all_effect_cells),
         activation_order=tuple(activation_order),
         activation_steps=tuple(activation_steps),
+        damage_events=tuple(damage_events),
     )
 
 
@@ -182,6 +230,7 @@ def _resolve_combination_effect(
     affected_cells: set[Position],
     consumed_positions: set[Position],
     rng: np.random.Generator,
+    initial_damage_events: tuple[BlockerDamageEvent, ...],
 ) -> ActivationResult:
     """
     resolve chain reactions caused by a combination effect.
@@ -214,6 +263,7 @@ def _resolve_combination_effect(
         affected_cells=affected_cells,
         rng=rng,
         initial_effect_cells=set(affected_cells),
+        initial_damage_events=initial_damage_events,
     )
 
 
@@ -237,11 +287,16 @@ def resolve_geometric_combination(
     consumed_positions = {source, destination}
 
     # calculate the combined effect at the swap destination.
-    affected_cells = get_geometric_combination_cells(
+    effect_passes = get_geometric_combination_passes(
         state=state,
         position=destination,
         special_a=special_a,
         special_b=special_b,
+    )
+    affected_cells = set().union(*effect_passes)
+    initial_damage_events = _damage_events_for_passes(
+        {special_a, special_b},
+        effect_passes,
     )
 
     return _resolve_combination_effect(
@@ -249,6 +304,7 @@ def resolve_geometric_combination(
         affected_cells=affected_cells,
         consumed_positions=consumed_positions,
         rng=rng,
+        initial_damage_events=initial_damage_events,
     )
 
 
@@ -274,7 +330,7 @@ def resolve_propeller_combination(
     consumed_positions = {source, destination}
 
     # Calculate the combined Propeller effect.
-    affected_cells = propeller_combination_cells(
+    effect_passes = propeller_combination_effect_passes(
         state=state,
         position=destination,
         special_a=special_a,
@@ -282,12 +338,18 @@ def resolve_propeller_combination(
         rng=rng,
         consumed_positions=consumed_positions,
     )
+    affected_cells = set().union(*effect_passes)
+    initial_damage_events = _damage_events_for_passes(
+        {special_a, special_b},
+        effect_passes,
+    )
 
     return _resolve_combination_effect(
         state=state,
         affected_cells=affected_cells,
         consumed_positions=consumed_positions,
         rng=rng,
+        initial_damage_events=initial_damage_events,
     )
 
 
@@ -345,6 +407,10 @@ def resolve_light_ball_special_combination(
 
     # both swapped specials are consumed.
     affected_cells = set(consumed_positions)
+    initial_damage_events = _damage_events_for_passes(
+        {SpecialType.LIGHT_BALL, partner_special},
+        (frozenset(consumed_positions),),
+    )
 
     # prevent the combination partners from activating separately.
     activated_positions = set(consumed_positions)
@@ -365,6 +431,7 @@ def resolve_light_ball_special_combination(
         affected_cells=affected_cells,
         rng=rng,
         initial_effect_cells=set(affected_cells),
+        initial_damage_events=initial_damage_events,
     )
 
     return ActivationResult(
@@ -374,6 +441,7 @@ def resolve_light_ball_special_combination(
         effect_cells=result.effect_cells,
         activation_order=result.activation_order,
         activation_steps=result.activation_steps,
+        damage_events=result.damage_events,
     )
 
 
@@ -401,6 +469,17 @@ def resolve_light_ball_light_ball_combination(
         affected_cells=frozenset(affected_cells),
         activated_positions=frozenset({source, destination}),
         effect_cells=frozenset(affected_cells),
+        damage_events=(
+            BlockerDamageEvent(
+                sources=frozenset({DamageSource.LIGHT_BALL}),
+                cells=frozenset(
+                    (row, col)
+                    for row in range(state.rows)
+                    for col in range(state.cols)
+                    if state.cell_mask[row, col]
+                ),
+            ),
+        ),
     )
 
 

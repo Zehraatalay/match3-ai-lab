@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
@@ -10,9 +10,15 @@ from match3_ai.games.match3.animation_events import (
     SpecialActivationInfo,
     SpecialCombinationInfo,
 )
+from match3_ai.games.match3.blockers import (
+    BlockerDamageEvent,
+    BlockerDamageRecord,
+    DamageSource,
+)
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.board_mechanics import (
     apply_board_gravity,
+    apply_blocker_damage,
     clear_board_matches,
     place_special_creations,
     refill_board_state,
@@ -40,6 +46,43 @@ Position = tuple[int, int]
 Action = tuple[Position, Position]
 
 
+def build_match_damage_events(
+    match_groups: tuple[frozenset[Position], ...],
+    rows: int,
+    cols: int,
+) -> tuple[BlockerDamageEvent, ...]:
+    events: list[BlockerDamageEvent] = []
+
+    for group_cells in match_groups:
+        events.append(
+            BlockerDamageEvent(
+                sources=frozenset({DamageSource.DIRECT_MATCH}),
+                cells=group_cells,
+            )
+        )
+        adjacent_cells = {
+            neighbor
+            for row, col in group_cells
+            for neighbor in (
+                (row - 1, col),
+                (row + 1, col),
+                (row, col - 1),
+                (row, col + 1),
+            )
+            if 0 <= neighbor[0] < rows and 0 <= neighbor[1] < cols
+        } - set(group_cells)
+
+        if adjacent_cells:
+            events.append(
+                BlockerDamageEvent(
+                    sources=frozenset({DamageSource.ADJACENT_MATCH}),
+                    cells=frozenset(adjacent_cells),
+                )
+            )
+
+    return tuple(events)
+
+
 def count_occupied_cells(
     state: BoardState,
     positions: set[Position],
@@ -61,6 +104,7 @@ class StepResult:
     activation_result: ActivationResult | None = None
     activation_history: tuple[ActivationResult, ...] = ()
     animation_events: tuple[AnimationEvent, ...] = ()
+    blocker_damage: tuple[BlockerDamageRecord, ...] = ()
 
 
 class Match3Engine:
@@ -100,6 +144,7 @@ class Match3Engine:
             affected_cells: set[Position] | None = None,
             special_activations: tuple[SpecialActivationInfo, ...] = (),
             special_combination: SpecialCombinationInfo | None = None,
+            blocker_damage: tuple[BlockerDamageRecord, ...] = (),
         ) -> None:
             if not record_events:
                 return
@@ -113,6 +158,7 @@ class Match3Engine:
                     ),
                     special_activations=special_activations,
                     special_combination=special_combination,
+                    blocker_damage=blocker_damage,
                 )
             )
 
@@ -133,6 +179,15 @@ class Match3Engine:
                     effect_cells=step.effect_cells,
                 )
                 for step in result.activation_steps
+            )
+
+        def order_damage_records(
+            records: tuple[BlockerDamageRecord, ...],
+        ) -> tuple[BlockerDamageRecord, ...]:
+            start = len(blocker_damage_history)
+            return tuple(
+                replace(record, hit_order=start + index)
+                for index, record in enumerate(records)
             )
 
         # --------------------------------------------------
@@ -184,6 +239,7 @@ class Match3Engine:
         )
 
         total_cleared = 0
+        blocker_damage_history: list[BlockerDamageRecord] = []
         cascade_count = 0
         is_initial_match = True
 
@@ -272,6 +328,20 @@ class Match3Engine:
                 ),
                 special_combination=special_combination,
             )
+
+            current_state, damage_records = apply_blocker_damage(
+                current_state,
+                activation_result.damage_events,
+            )
+            damage_records = order_damage_records(damage_records)
+            blocker_damage_history.extend(damage_records)
+            if damage_records:
+                record_event(
+                    AnimationEventType.BLOCKER_DAMAGE,
+                    current_state,
+                    {record.position for record in damage_records},
+                    blocker_damage=damage_records,
+                )
 
             # --------------------------------------------------
             # Clear affected cells
@@ -370,6 +440,12 @@ class Match3Engine:
                 rng=self.rng,
             )
 
+            match_damage_events = build_match_damage_events(
+                tuple(group.cells for group in groups),
+                current_state.rows,
+                current_state.cols,
+            )
+
             if match_activation.activated_positions:
                 activation_history.append(match_activation)
 
@@ -396,6 +472,21 @@ class Match3Engine:
                     special_activations=build_special_activations(
                         match_activation,
                     ),
+                )
+
+            current_state, match_damage_records = apply_blocker_damage(
+                current_state,
+                match_damage_events + match_activation.damage_events,
+            )
+            match_damage_records = order_damage_records(match_damage_records)
+            blocker_damage_history.extend(match_damage_records)
+
+            if match_damage_records:
+                record_event(
+                    AnimationEventType.BLOCKER_DAMAGE,
+                    current_state,
+                    {record.position for record in match_damage_records},
+                    blocker_damage=match_damage_records,
                 )
 
             # --------------------------------------------------
@@ -510,4 +601,5 @@ class Match3Engine:
             activation_result=activation_result,
             activation_history=tuple(activation_history),
             animation_events=tuple(animation_events),
+            blocker_damage=tuple(blocker_damage_history),
         )

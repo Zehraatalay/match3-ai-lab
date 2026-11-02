@@ -103,11 +103,27 @@ def propeller_cells(
     """
     return the propeller's launch area and one random target.
     """
-    affected = propeller_launch_cells(state, position)
+    return set().union(
+        *propeller_effect_passes(
+            state=state,
+            position=position,
+            rng=rng,
+            excluded_positions=excluded_positions,
+        )
+    )
 
-    excluded = affected | (
+
+def propeller_effect_passes(
+    state: BoardState,
+    position: Position,
+    rng: np.random.Generator,
+    excluded_positions: set[Position] | None = None,
+) -> tuple[frozenset[Position], ...]:
+    launch_cells = propeller_launch_cells(state, position)
+    excluded = launch_cells | (
         excluded_positions if excluded_positions is not None else set()
     )
+    passes = [frozenset(launch_cells)]
 
     target = select_propeller_target(
         state=state,
@@ -116,9 +132,9 @@ def propeller_cells(
     )
 
     if target is not None:
-        affected.add(target)
+        passes.append(frozenset({target}))
 
-    return affected
+    return tuple(passes)
 
 
 # sadece hedef renkteki taslari return ediyor light-ball bu kumeye dahil degil
@@ -144,44 +160,32 @@ class TileTransformation:
     special_type: SpecialType
 
 
-def get_special_effect_cells(
+def get_special_effect_passes(
     state: BoardState,
     position: Position,
     special_type: SpecialType,
     rng: np.random.Generator,
     target_color: int | None = None,
     excluded_positions: set[Position] | None = None,
-) -> set[Position]:
+) -> tuple[frozenset[Position], ...]:
     """
     calculate the cells affected by a single special.
     this function does not mutate the board or trigger
     other specials.
     """
     if special_type == SpecialType.ROCKET_HORIZONTAL:
-        return rocket_cells(
-            state,
-            position,
-            horizontal=True,
-        )
+        return (frozenset(rocket_cells(state, position, horizontal=True)),)
 
     if special_type == SpecialType.ROCKET_VERTICAL:
-        return rocket_cells(
-            state,
-            position,
-            horizontal=False,
-        )
+        return (frozenset(rocket_cells(state, position, horizontal=False)),)
 
     if special_type == SpecialType.BOMB:
-        return bomb_cells(
-            state,
-            position,
-            radius=1,
-        )
+        return (frozenset(bomb_cells(state, position, radius=1)),)
 
     if special_type == SpecialType.PROPELLER:
-        return propeller_cells(
-            state,
-            position,
+        return propeller_effect_passes(
+            state=state,
+            position=position,
             rng=rng,
             excluded_positions=excluded_positions,
         )
@@ -190,12 +194,33 @@ def get_special_effect_cells(
         if target_color is None:
             raise ValueError("light Ball activation requires a target color")
 
-        return light_ball_cells(
-            state,
-            target_color=target_color,
-        ) | {position}
+        return (
+            frozenset(
+                light_ball_cells(state, target_color=target_color) | {position}
+            ),
+        )
 
     raise ValueError(f"unsupported special type: {special_type}")
+
+
+def get_special_effect_cells(
+    state: BoardState,
+    position: Position,
+    special_type: SpecialType,
+    rng: np.random.Generator,
+    target_color: int | None = None,
+    excluded_positions: set[Position] | None = None,
+) -> set[Position]:
+    return set().union(
+        *get_special_effect_passes(
+            state=state,
+            position=position,
+            special_type=special_type,
+            rng=rng,
+            target_color=target_color,
+            excluded_positions=excluded_positions,
+        )
+    )
 
 
 def rocket_rocket_cells(
@@ -205,8 +230,18 @@ def rocket_rocket_cells(
     """
     clear one horizontal row and one vertical column.
     """
-    return rocket_cells(state, position, horizontal=True) | rocket_cells(
-        state, position, horizontal=False
+    return set().union(
+        *rocket_rocket_effect_passes(state, position)
+    )
+
+
+def rocket_rocket_effect_passes(
+    state: BoardState,
+    position: Position,
+) -> tuple[frozenset[Position], ...]:
+    return (
+        frozenset(rocket_cells(state, position, horizontal=True)),
+        frozenset(rocket_cells(state, position, horizontal=False)),
     )
 
 
@@ -217,32 +252,39 @@ def rocket_bomb_cells(
     """
     clear three horizontal rows and three vertical columns.
     """
+    return set().union(*rocket_bomb_effect_passes(state, position))
+
+
+def rocket_bomb_effect_passes(
+    state: BoardState,
+    position: Position,
+) -> tuple[frozenset[Position], ...]:
     row, col = position
-    affected = set()
+    passes = []
 
     for offset in (-1, 0, 1):
         target_row = row + offset
         target_col = col + offset
 
         if 0 <= target_row < state.rows:
-            affected.update(
-                rocket_cells(
+            passes.append(
+                frozenset(rocket_cells(
                     state,
                     position=(target_row, col),
                     horizontal=True,
-                )
+                ))
             )
 
         if 0 <= target_col < state.cols:
-            affected.update(
-                rocket_cells(
+            passes.append(
+                frozenset(rocket_cells(
                     state,
                     position=(row, target_col),
                     horizontal=False,
-                )
+                ))
             )
 
-    return affected
+    return tuple(passes)
 
 
 def is_rocket(special_type: SpecialType) -> bool:
@@ -262,16 +304,32 @@ def get_geometric_combination_cells(
     calculate the effect of geometric special combinations.
     the order of the two specials does not matter.
     """
+    return set().union(
+        *get_geometric_combination_passes(
+            state=state,
+            position=position,
+            special_a=special_a,
+            special_b=special_b,
+        )
+    )
+
+
+def get_geometric_combination_passes(
+    state: BoardState,
+    position: Position,
+    special_a: SpecialType,
+    special_b: SpecialType,
+) -> tuple[frozenset[Position], ...]:
     if is_rocket(special_a) and is_rocket(special_b):
-        return rocket_rocket_cells(state, position)
+        return rocket_rocket_effect_passes(state, position)
 
     if (is_rocket(special_a) and special_b == SpecialType.BOMB) or (
         special_a == SpecialType.BOMB and is_rocket(special_b)
     ):
-        return rocket_bomb_cells(state, position)
+        return rocket_bomb_effect_passes(state, position)
 
     if special_a == SpecialType.BOMB and special_b == SpecialType.BOMB:
-        return bomb_cells(state, position, radius=2)
+        return (frozenset(bomb_cells(state, position, radius=2)),)
 
     raise ValueError(
         f"unsupported geometric combination: {special_a.name} + {special_b.name}"
@@ -294,6 +352,26 @@ def propeller_combination_cells(
         Propeller + Bomb: 2 targets, each with a 3x3 effect.
     no board mutation or chain reaction occurs here.
     """
+    return set().union(
+        *propeller_combination_effect_passes(
+            state=state,
+            position=position,
+            special_a=special_a,
+            special_b=special_b,
+            rng=rng,
+            consumed_positions=consumed_positions,
+        )
+    )
+
+
+def propeller_combination_effect_passes(
+    state: BoardState,
+    position: Position,
+    special_a: SpecialType,
+    special_b: SpecialType,
+    rng: np.random.Generator,
+    consumed_positions: set[Position] | None = None,
+) -> tuple[frozenset[Position], ...]:
     is_propeller_a = special_a == SpecialType.PROPELLER
     is_propeller_b = special_b == SpecialType.PROPELLER
 
@@ -318,10 +396,12 @@ def propeller_combination_cells(
         )
 
     # all Propeller combinations begin with a launch effect.
-    affected_cells = propeller_launch_cells(
+    launch_cells = propeller_launch_cells(
         state,
         position,
     )
+    affected_cells = set(launch_cells)
+    passes = [frozenset(launch_cells)]
 
     # both swapped specials must be consumed.
     if consumed_positions is not None:
@@ -347,26 +427,29 @@ def propeller_combination_cells(
         selected_targets.add(target)
 
         if combination_type == "propeller_propeller":
-            affected_cells.add(target)
+            target_passes = (frozenset({target}),)
 
         elif combination_type == "propeller_rocket":
-            affected_cells.update(
-                rocket_rocket_cells(
-                    state,
-                    position=target,
-                )
+            target_passes = rocket_rocket_effect_passes(
+                state,
+                position=target,
             )
 
         elif combination_type == "propeller_bomb":
-            affected_cells.update(
-                bomb_cells(
-                    state,
-                    position=target,
-                    radius=1,
-                )
+            target_passes = (
+                frozenset(
+                    bomb_cells(
+                        state,
+                        position=target,
+                        radius=1,
+                    )
+                ),
             )
 
-    return affected_cells
+        passes.extend(target_passes)
+        affected_cells.update(set().union(*target_passes))
+
+    return tuple(passes)
 
 
 def light_ball_combination_transformations(

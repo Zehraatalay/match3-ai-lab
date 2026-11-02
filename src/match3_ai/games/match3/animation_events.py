@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 from match3_ai.games.match3.board import BoardState
+from match3_ai.games.match3.blockers import BlockerDamageRecord
 from match3_ai.games.match3.specials import SpecialType
 
 Position = tuple[int, int]
@@ -18,6 +19,7 @@ class AnimationEventType(Enum):
     GRAVITY = auto()
     REFILL = auto()
     RESHUFFLE = auto()
+    BLOCKER_DAMAGE = auto()
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,3 +44,4 @@ class AnimationEvent:
     affected_cells: frozenset[Position] = frozenset()
     special_activations: tuple[SpecialActivationInfo, ...] = ()
     special_combination: SpecialCombinationInfo | None = None
+    blocker_damage: tuple[BlockerDamageRecord, ...] = ()

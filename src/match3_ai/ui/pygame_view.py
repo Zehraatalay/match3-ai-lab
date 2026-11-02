@@ -51,6 +51,7 @@ ANIMATION_DURATIONS = {
     AnimationEventType.MATCH: 400,
     AnimationEventType.SPECIAL_CREATION: 600,
     AnimationEventType.SPECIAL_ACTIVATION: 850,
+    AnimationEventType.BLOCKER_DAMAGE: 350,
     AnimationEventType.CLEAR: 300,
     AnimationEventType.GRAVITY: 350,
     AnimationEventType.REFILL: 500,
