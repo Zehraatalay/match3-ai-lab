@@ -46,6 +46,7 @@ BLOCKER_PROPERTIES: dict[BlockerType, BlockerProperties] = {
                 DamageSource.LIGHT_BALL,
             }
         ),
+        blocks_refill=True,
     ),
     BlockerType.ICE: BlockerProperties(
         contains_tile=True,
@@ -75,5 +76,6 @@ BLOCKER_PROPERTIES: dict[BlockerType, BlockerProperties] = {
                 DamageSource.LIGHT_BALL,
             }
         ),
+        blocks_refill=True,
     ),
 }

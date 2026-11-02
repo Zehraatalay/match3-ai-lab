@@ -1,5 +1,7 @@
 import numpy as np
+import pytest
 
+from match3_ai.games.match3.blockers import BlockerType
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.board_mechanics import (
     apply_board_gravity,
@@ -177,3 +179,117 @@ def test_board_mechanics_do_not_mutate_input():
 
     assert np.array_equal(state.tiles, original_tiles)
     assert np.array_equal(state.specials, original_specials)
+
+
+@pytest.mark.parametrize("blocker_type", [BlockerType.CRATE, BlockerType.STONE])
+def test_gravity_segments_around_multiple_fixed_blockers(blocker_type):
+    tiles = np.array([[1], [0], [0], [2], [0], [0], [3]], dtype=np.uint8)
+    blockers = np.zeros_like(tiles)
+    blocker_hp = np.zeros_like(tiles)
+    blockers[2, 0] = blocker_type
+    blockers[5, 0] = blocker_type
+    blocker_hp[[2, 5], 0] = 1
+    state = BoardState(
+        tiles=tiles,
+        cell_mask=np.ones_like(tiles, dtype=np.bool_),
+        blockers=blockers,
+        blocker_hp=blocker_hp,
+    )
+
+    result = apply_board_gravity(state)
+
+    assert result.tiles[:, 0].tolist() == [0, 1, 0, 0, 2, 0, 3]
+    assert np.array_equal(result.blockers, blockers)
+    assert np.array_equal(result.blocker_hp, blocker_hp)
+
+
+def test_gravity_segments_around_non_playable_cells():
+    tiles = np.array([[1], [0], [0], [2], [0], [3]], dtype=np.uint8)
+    cell_mask = np.ones_like(tiles, dtype=np.bool_)
+    cell_mask[2, 0] = False
+    tiles[2, 0] = 0
+    state = BoardState(tiles=tiles, cell_mask=cell_mask)
+
+    result = apply_board_gravity(state)
+
+    assert result.tiles[:, 0].tolist() == [0, 1, 0, 0, 2, 3]
+    assert result.tiles[2, 0] == 0
+
+
+def test_gravity_moves_special_pairs_through_ice_overlay():
+    tiles = np.array([[3], [0], [2], [0], [1]], dtype=np.uint8)
+    specials = np.zeros_like(tiles)
+    specials[0, 0] = SpecialType.BOMB
+    blockers = np.zeros_like(tiles)
+    blocker_hp = np.zeros_like(tiles)
+    blockers[2, 0] = BlockerType.ICE
+    blocker_hp[2, 0] = 2
+    state = BoardState(
+        tiles=tiles,
+        specials=specials,
+        cell_mask=np.ones_like(tiles, dtype=np.bool_),
+        blockers=blockers,
+        blocker_hp=blocker_hp,
+    )
+
+    result = apply_board_gravity(state)
+
+    assert result.tiles[:, 0].tolist() == [0, 0, 3, 2, 1]
+    assert result.specials[2, 0] == SpecialType.BOMB
+    assert result.blockers[2, 0] == BlockerType.ICE
+    assert result.blocker_hp[2, 0] == 2
+
+
+def test_refill_skips_fixed_blockers_and_fills_ice_and_open_cells():
+    tiles = np.ones((3, 3), dtype=np.uint8)
+    cell_mask = np.ones((3, 3), dtype=np.bool_)
+    blockers = np.zeros_like(tiles)
+    blocker_hp = np.zeros_like(tiles)
+    tiles[0, 0] = 0
+    tiles[0, 1] = 0
+    tiles[0, 2] = 0
+    tiles[1, 0] = 0
+    cell_mask[2, 2] = False
+    tiles[2, 2] = 0
+    blockers[0, 0] = BlockerType.CRATE
+    blocker_hp[0, 0] = 2
+    blockers[0, 1] = BlockerType.STONE
+    blocker_hp[0, 1] = 2
+    blockers[0, 2] = BlockerType.ICE
+    blocker_hp[0, 2] = 1
+    state = BoardState(
+        tiles=tiles,
+        cell_mask=cell_mask,
+        blockers=blockers,
+        blocker_hp=blocker_hp,
+    )
+
+    result = refill_board_state(state, 3, np.random.default_rng(42))
+
+    assert result.tiles[0, 0] == 0
+    assert result.tiles[0, 1] == 0
+    assert 1 <= result.tiles[0, 2] <= 3
+    assert 1 <= result.tiles[1, 0] <= 3
+    assert result.tiles[2, 2] == 0
+    assert np.array_equal(result.blockers, blockers)
+    assert np.array_equal(result.blocker_hp, blocker_hp)
+
+
+def test_blocker_free_gravity_and_refill_remain_unchanged():
+    state = make_state(
+        [
+            [1, 2, 3],
+            [0, 0, 0],
+            [3, 1, 2],
+        ]
+    )
+
+    gravity_state = apply_board_gravity(state)
+    assert gravity_state.tiles[:, 0].tolist() == [0, 1, 3]
+
+    refilled_state = refill_board_state(
+        gravity_state,
+        num_colors=3,
+        rng=np.random.default_rng(42),
+    )
+    assert np.all(refilled_state.tiles > 0)

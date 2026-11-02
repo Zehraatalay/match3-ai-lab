@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from match3_ai.games.match3.blockers import BlockerType
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.pattern_detection import detect_patterns
 from match3_ai.games.match3.recovery import (
@@ -315,3 +316,55 @@ def test_reshuffle_keeps_special_attached_to_its_color():
     row, col = positions[0]
 
     assert result.tiles[row, col] == 2
+
+
+def test_reshuffle_preserves_blockers_pairs_and_incomplete_positions():
+    tiles = np.array(
+        [
+            [0, 2, 3, 4],
+            [2, 3, 4, 1],
+            [3, 4, 0, 2],
+            [4, 1, 2, 0],
+        ],
+        dtype=np.uint8,
+    )
+    specials = np.zeros_like(tiles)
+    specials[0, 1] = SpecialType.BOMB
+    blockers = np.zeros_like(tiles)
+    blocker_hp = np.zeros_like(tiles)
+    blockers[0, 0] = BlockerType.CRATE
+    blocker_hp[0, 0] = 2
+    blockers[1, 1] = BlockerType.ICE
+    blocker_hp[1, 1] = 1
+    blockers[3, 3] = BlockerType.STONE
+    blocker_hp[3, 3] = 2
+    state = BoardState(
+        tiles=tiles,
+        specials=specials,
+        cell_mask=np.ones_like(tiles, dtype=np.bool_),
+        blockers=blockers,
+        blocker_hp=blocker_hp,
+    )
+
+    result = reshuffle_board(state, np.random.default_rng(17))
+
+    assert np.array_equal(result.blockers, blockers)
+    assert np.array_equal(result.blocker_hp, blocker_hp)
+    assert result.tiles[0, 0] == 0
+    assert result.tiles[3, 3] == 0
+    assert np.count_nonzero(result.tiles == 0) == np.count_nonzero(tiles == 0)
+    tile_capable_cells = (blockers != BlockerType.CRATE) & (
+        blockers != BlockerType.STONE
+    )
+    assert not np.array_equal(
+        np.argwhere((result.tiles == 0) & tile_capable_cells),
+        np.argwhere((tiles == 0) & tile_capable_cells),
+    )
+    assert np.array_equal(
+        np.bincount(result.tiles.ravel(), minlength=256),
+        np.bincount(tiles.ravel(), minlength=256),
+    )
+    assert np.count_nonzero(result.specials == SpecialType.BOMB) == 1
+    bomb_row, bomb_col = np.argwhere(result.specials == SpecialType.BOMB)[0]
+    assert result.tiles[bomb_row, bomb_col] == 2
+    assert detect_patterns(result.tiles) == []

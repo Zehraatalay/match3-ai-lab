@@ -1,3 +1,7 @@
+from match3_ai.games.match3.blockers import (
+    BLOCKER_PROPERTIES,
+    BlockerType,
+)
 from match3_ai.games.match3.board import EMPTY, BoardState
 from match3_ai.games.match3.pattern_detection import detect_patterns
 from match3_ai.games.match3.specials import SpecialType
@@ -31,6 +35,15 @@ def is_valid_swap(
     # 3. both cells must be playable.
     if not (state.cell_mask[row_a, col_a] and state.cell_mask[row_b, col_b]):
         return False
+
+    # sabit blockerlarin swap alanina girmesini engelle
+    for position in (pos_a, pos_b):
+        blocker_type = BlockerType(int(state.blockers[position]))
+        if (
+            blocker_type != BlockerType.NONE
+            and not BLOCKER_PROPERTIES[blocker_type].allows_swap
+        ):
+            return False
 
     # 4. empty cells cannot participate in a swap.
     if state.tiles[row_a, col_a] == EMPTY or state.tiles[row_b, col_b] == EMPTY:

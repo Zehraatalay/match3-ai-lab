@@ -20,6 +20,17 @@
 - Use type hints where appropriate.
 - Avoid unnecessary dependencies.
 - Consider performance, maintainability, and extensibility.
+## Code Comments
+
+- Write code comments in Turkish
+- Start comments with lowercase letters
+- Do not use punctuation at the end of comments
+- Keep technical terms in English
+- Add comments only when they explain non-obvious logic or important design decisions
+- Do not add comments that merely restate the code
+- Keep identifiers, docstrings, type hints, and error messages in English
+- Preserve existing comments unless modification is necessary
+- Do not use turkish characters 
 
 ## 4. Testing
 

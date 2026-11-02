@@ -1,5 +1,6 @@
 import numpy as np
 
+from match3_ai.games.match3.blockers import BLOCKER_PROPERTIES
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.moves import find_valid_moves
 from match3_ai.games.match3.pattern_detection import detect_patterns
@@ -28,12 +29,19 @@ def reshuffle_board(
     if type(max_attempts) is not int or max_attempts <= 0:
         raise ValueError("max_attempts must be a positive integer")
 
-    # extract tiles from playable cells.
-    original_tiles = state.tiles[state.cell_mask]
-    original_specials = state.specials[state.cell_mask]
-
-    # store the positions of playable cells.
-    playable_positions = np.argwhere(state.cell_mask)
+    tile_forbidden_blockers = [
+        blocker_type
+        for blocker_type, properties in BLOCKER_PROPERTIES.items()
+        if not properties.contains_tile
+    ]
+    tile_positions = np.argwhere(
+        state.cell_mask
+        & ~np.isin(state.blockers, tile_forbidden_blockers)
+    )
+    row_indices = tile_positions[:, 0]
+    col_indices = tile_positions[:, 1]
+    original_tiles = state.tiles[row_indices, col_indices]
+    original_specials = state.specials[row_indices, col_indices]
 
     for _ in range(max_attempts):
         # shuffle existing tiles without generating new ones.
@@ -45,9 +53,7 @@ def reshuffle_board(
         new_tiles = np.zeros_like(state.tiles)
         new_specials = np.zeros_like(state.specials)
 
-        # place shuffled tiles into playable positions.
-        row_indices = playable_positions[:, 0]
-        col_indices = playable_positions[:, 1]
+        # karistirilan degerleri tile alabilen konumlara yerlestir
         new_tiles[row_indices, col_indices] = shuffled_tiles
         new_specials[row_indices, col_indices] = shuffled_specials
 
@@ -55,6 +61,8 @@ def reshuffle_board(
             tiles=new_tiles,
             specials=new_specials,
             cell_mask=state.cell_mask,
+            blockers=state.blockers,
+            blocker_hp=state.blocker_hp,
         )
 
         # reject boards containing existing matches.

@@ -1,5 +1,6 @@
 import numpy as np
 
+from match3_ai.games.match3.blockers import BLOCKER_PROPERTIES
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.constants import COLORLESS, EMPTY
 from match3_ai.games.match3.special_selection import SpecialCreation
@@ -27,6 +28,8 @@ def clear_board_matches(
         tiles=tiles,
         specials=specials,
         cell_mask=state.cell_mask,
+        blockers=state.blockers,
+        blocker_hp=state.blocker_hp,
     )
 
 
@@ -39,31 +42,55 @@ def apply_board_gravity(state: BoardState) -> BoardState:
     specials = state.specials.copy()
 
     rows, cols = state.shape
+    fixed_blocker_types = [
+        blocker_type
+        for blocker_type, properties in BLOCKER_PROPERTIES.items()
+        if not properties.allows_gravity
+    ]
+    fixed_cells = ~state.cell_mask | np.isin(
+        state.blockers,
+        fixed_blocker_types,
+    )
 
     for col in range(cols):
-        playable_rows = [row for row in range(rows) if state.cell_mask[row, col]]
+        segment_start: int | None = None
 
-        tile_data = [
-            (tiles[row, col], specials[row, col])
-            for row in playable_rows
-            if tiles[row, col] != EMPTY
-        ]
+        for row in range(rows + 1):
+            is_segment_cell = row < rows and not fixed_cells[row, col]
 
-        for row in playable_rows:
-            tiles[row, col] = EMPTY
-            specials[row, col] = SpecialType.NONE
+            if is_segment_cell and segment_start is None:
+                segment_start = row
+                continue
 
-        for row, (color, special) in zip(
-            reversed(playable_rows),
-            reversed(tile_data),
-        ):
-            tiles[row, col] = color
-            specials[row, col] = special
+            if is_segment_cell or segment_start is None:
+                continue
+
+            write_row = row - 1
+
+            for read_row in range(row - 1, segment_start - 1, -1):
+                if tiles[read_row, col] == EMPTY:
+                    continue
+
+                if write_row != read_row:
+                    tiles[write_row, col] = tiles[read_row, col]
+                    specials[write_row, col] = specials[read_row, col]
+                    tiles[read_row, col] = EMPTY
+                    specials[read_row, col] = SpecialType.NONE
+
+                write_row -= 1
+
+            for empty_row in range(segment_start, write_row + 1):
+                tiles[empty_row, col] = EMPTY
+                specials[empty_row, col] = SpecialType.NONE
+
+            segment_start = None
 
     return BoardState(
         tiles=tiles,
         specials=specials,
         cell_mask=state.cell_mask,
+        blockers=state.blockers,
+        blocker_hp=state.blocker_hp,
     )
 
 
@@ -79,7 +106,16 @@ def refill_board_state(
     tiles = state.tiles.copy()
     specials = state.specials.copy()
 
-    empty_cells = (tiles == EMPTY) & state.cell_mask
+    refill_blocker_types = [
+        blocker_type
+        for blocker_type, properties in BLOCKER_PROPERTIES.items()
+        if properties.blocks_refill
+    ]
+    empty_cells = (
+        (tiles == EMPTY)
+        & state.cell_mask
+        & ~np.isin(state.blockers, refill_blocker_types)
+    )
     count = int(np.count_nonzero(empty_cells))
 
     if count == 0:
@@ -99,6 +135,8 @@ def refill_board_state(
         tiles=tiles,
         specials=specials,
         cell_mask=state.cell_mask,
+        blockers=state.blockers,
+        blocker_hp=state.blocker_hp,
     )
 
 
@@ -131,4 +169,6 @@ def place_special_creations(
         tiles=tiles,
         specials=specials,
         cell_mask=state.cell_mask,
+        blockers=state.blockers,
+        blocker_hp=state.blocker_hp,
     )

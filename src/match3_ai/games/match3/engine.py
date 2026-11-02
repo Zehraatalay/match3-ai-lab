@@ -173,6 +173,8 @@ class Match3Engine:
             tiles=tiles,
             specials=specials,
             cell_mask=state.cell_mask,
+            blockers=state.blockers,
+            blocker_hp=state.blocker_hp,
         )
 
         record_event(

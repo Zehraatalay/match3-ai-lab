@@ -239,14 +239,6 @@ class BoardState:
                         f"{blocker_type.name} cannot contain specials"
                     )
 
-            else:
-                if np.any(
-                    self.tiles[blocker_mask] == EMPTY
-                ):
-                    raise ValueError(
-                        f"{blocker_type.name} must contain tiles"
-                    )
-
         # --------------------------------------------------
         # Defensive copying
         # --------------------------------------------------

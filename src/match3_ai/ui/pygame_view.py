@@ -23,6 +23,7 @@ from match3_ai.ui.special_effects import (
     draw_special_effects,
     get_active_special,
 )
+
 # Display configuration
 CELL_SIZE = 72
 PADDING = 24

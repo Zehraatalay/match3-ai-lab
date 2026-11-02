@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import match3_ai.games.match3.engine as engine_module
+from match3_ai.games.match3.blockers import BlockerType
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.engine import Match3Engine
 from match3_ai.games.match3.pattern_detection import detect_patterns
@@ -47,6 +48,32 @@ def test_valid_swap_resolves_matches():
     assert np.all(result.state.tiles > 0)
 
     # engine must resolve all line and square matches.
+    assert detect_patterns(result.state.tiles) == []
+
+
+def test_match_under_ice_completes_through_gravity_and_refill():
+    state = make_state()
+    blockers = np.zeros_like(state.tiles)
+    blocker_hp = np.zeros_like(state.tiles)
+    blockers[0, 0] = BlockerType.ICE
+    blocker_hp[0, 0] = 2
+    state = BoardState(
+        tiles=state.tiles,
+        specials=state.specials,
+        cell_mask=state.cell_mask,
+        blockers=blockers,
+        blocker_hp=blocker_hp,
+    )
+
+    result = Match3Engine(num_colors=3, seed=42).step(
+        state,
+        ((0, 1), (1, 1)),
+    )
+
+    assert result.valid
+    assert result.state.tiles[0, 0] != 0
+    assert result.state.blockers[0, 0] == BlockerType.ICE
+    assert result.state.blocker_hp[0, 0] == 2
     assert detect_patterns(result.state.tiles) == []
 
 
