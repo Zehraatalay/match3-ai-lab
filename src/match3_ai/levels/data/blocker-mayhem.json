@@ -1,0 +1,32 @@
+{
+  "level_id": "blocker-mayhem",
+  "name": "Blocker Mayhem",
+  "rows": 9,
+  "cols": 8,
+  "num_colors": 4,
+  "move_limit": 15,
+  "seed": 41006,
+  "cell_mask": [
+    [false, false, true, true, true, true, false, false],
+    [false, true, true, true, true, true, true, false],
+    [true, true, true, true, true, true, true, true],
+    [true, true, true, true, true, true, true, false],
+    [true, true, true, true, true, true, true, true],
+    [false, true, true, true, true, true, true, true],
+    [true, true, true, true, true, true, true, true],
+    [false, false, true, true, true, true, true, false],
+    [false, false, false, true, true, true, false, false]
+  ],
+  "blockers": [
+    {"position": [2, 2], "type": "CRATE", "variant": "SINGLE"},
+    {"position": [5, 5], "type": "CRATE", "variant": "DOUBLE"},
+    {"position": [1, 4], "type": "ICE", "variant": "THIN"},
+    {"position": [5, 3], "type": "ICE", "variant": "THICK"},
+    {"position": [2, 6], "type": "STONE", "variant": "SINGLE"},
+    {"position": [6, 2], "type": "STONE", "variant": "DOUBLE"}
+  ],
+  "objectives": [
+    {"type": "CLEAR_ALL_BLOCKERS"},
+    {"type": "COLLECT_TILES", "target": 30}
+  ]
+}

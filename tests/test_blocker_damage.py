@@ -19,6 +19,8 @@ from match3_ai.games.match3.engine import (
 )
 from match3_ai.games.match3.special_resolver import (
     resolve_geometric_combination,
+    resolve_light_ball_light_ball_combination,
+    resolve_light_ball_special_combination,
     resolve_propeller_combination,
     resolve_special_activation,
 )
@@ -239,14 +241,14 @@ def test_each_special_type_emits_an_independent_blocker_hit(
     assert damaged.blocker_hp[target_position] == 2
 
 
-def test_light_ball_light_ball_hits_fixed_blockers_boardwide():
-    from match3_ai.games.match3.special_resolver import (
-        resolve_light_ball_light_ball_combination,
-    )
-
+@pytest.mark.parametrize(
+    "blocker_type",
+    [BlockerType.CRATE, BlockerType.ICE, BlockerType.STONE],
+)
+def test_light_ball_light_ball_hits_blockers_boardwide(blocker_type):
     blockers = np.zeros((5, 5), dtype=np.uint8)
     blocker_hp = np.zeros_like(blockers)
-    blockers[0, 0] = BlockerType.STONE
+    blockers[0, 0] = blocker_type
     blocker_hp[0, 0] = 2
     specials = np.zeros_like(blockers)
     specials[1, 1] = SpecialType.LIGHT_BALL
@@ -261,7 +263,8 @@ def test_light_ball_light_ball_hits_fixed_blockers_boardwide():
         ],
         dtype=np.uint8,
     )
-    tiles[0, 0] = 0
+    if blocker_type != BlockerType.ICE:
+        tiles[0, 0] = 0
     state = BoardState(
         tiles=tiles,
         cell_mask=np.ones_like(tiles, dtype=np.bool_),
@@ -413,6 +416,46 @@ def test_geometric_combinations_keep_their_damage_passes(
     assert len(result.damage_events) == expected_passes
 
 
+@pytest.mark.parametrize(
+    ("special_a", "special_b", "expected_hits"),
+    [
+        (SpecialType.ROCKET_HORIZONTAL, SpecialType.ROCKET_VERTICAL, 1),
+        (SpecialType.ROCKET_HORIZONTAL, SpecialType.BOMB, 2),
+        (SpecialType.BOMB, SpecialType.BOMB, 1),
+    ],
+)
+@pytest.mark.parametrize(
+    "blocker_type",
+    [BlockerType.CRATE, BlockerType.ICE, BlockerType.STONE],
+)
+def test_geometric_combinations_damage_each_blocker_type_per_pass(
+    special_a,
+    special_b,
+    expected_hits,
+    blocker_type,
+):
+    specials = np.zeros((5, 5), dtype=np.uint8)
+    specials[2, 1] = special_a
+    specials[2, 2] = special_b
+    blockers = np.zeros_like(specials)
+    blocker_hp = np.zeros_like(specials)
+    blockers[1, 2] = blocker_type
+    blocker_hp[1, 2] = 10
+    state = make_state(blockers, blocker_hp, specials)
+
+    result = resolve_geometric_combination(
+        state,
+        (2, 1),
+        (2, 2),
+        np.random.default_rng(43),
+    )
+    damaged, records = apply_blocker_damage(state, result.damage_events)
+    target_records = [record for record in records if record.position == (1, 2)]
+
+    assert len(target_records) == expected_hits
+    assert damaged.blocker_hp[1, 2] == 10 - expected_hits
+
+
 def test_rocket_bomb_overlapping_line_passes_both_damage_the_blocker():
     specials = np.zeros((5, 5), dtype=np.uint8)
     specials[2, 1] = SpecialType.ROCKET_HORIZONTAL
@@ -452,6 +495,140 @@ def test_propeller_rocket_keeps_each_target_cross_pass_separate():
     assert len(result.damage_events) == 5
 
 
+@pytest.mark.parametrize(
+    ("special_a", "special_b"),
+    [
+        (SpecialType.PROPELLER, SpecialType.PROPELLER),
+        (SpecialType.PROPELLER, SpecialType.ROCKET_HORIZONTAL),
+        (SpecialType.PROPELLER, SpecialType.BOMB),
+    ],
+)
+@pytest.mark.parametrize(
+    "blocker_type",
+    [BlockerType.CRATE, BlockerType.ICE, BlockerType.STONE],
+)
+def test_propeller_combinations_apply_deterministic_hits_to_blockers(
+    special_a,
+    special_b,
+    blocker_type,
+):
+    specials = np.zeros((5, 5), dtype=np.uint8)
+    specials[2, 1] = special_a
+    specials[2, 2] = special_b
+    blockers = np.zeros_like(specials)
+    blocker_hp = np.zeros_like(specials)
+    blockers[1, 2] = blocker_type
+    blocker_hp[1, 2] = 10
+    state = make_state(blockers, blocker_hp, specials)
+    result_a = resolve_propeller_combination(
+        state,
+        (2, 1),
+        (2, 2),
+        np.random.default_rng(29),
+    )
+    result_b = resolve_propeller_combination(
+        state,
+        (2, 1),
+        (2, 2),
+        np.random.default_rng(29),
+    )
+    damaged, records = apply_blocker_damage(state, result_a.damage_events)
+    expected_hits = sum((1, 2) in event.cells for event in result_a.damage_events)
+
+    assert result_a.damage_events == result_b.damage_events
+    assert expected_hits >= 1
+    assert len(records) == expected_hits
+    assert damaged.blocker_hp[1, 2] == 10 - expected_hits
+
+
+@pytest.mark.parametrize(
+    "partner_type",
+    [
+        SpecialType.ROCKET_HORIZONTAL,
+        SpecialType.BOMB,
+        SpecialType.PROPELLER,
+    ],
+)
+def test_light_ball_transformations_damage_ice_per_triggered_activation(
+    partner_type,
+):
+    tiles = np.full((5, 5), 2, dtype=np.uint8)
+    tiles[2, 1] = 255
+    tiles[2, 2] = 1
+    tiles[2, 3] = 1
+    specials = np.zeros_like(tiles)
+    specials[2, 1] = SpecialType.LIGHT_BALL
+    specials[2, 2] = partner_type
+    blockers = np.zeros_like(tiles)
+    blocker_hp = np.zeros_like(tiles)
+    blockers[2, 3] = BlockerType.ICE
+    blocker_hp[2, 3] = 4
+    state = BoardState(
+        tiles=tiles,
+        specials=specials,
+        cell_mask=np.ones_like(tiles, dtype=np.bool_),
+        blockers=blockers,
+        blocker_hp=blocker_hp,
+    )
+
+    result_a = resolve_light_ball_special_combination(
+        state,
+        (2, 1),
+        (2, 2),
+        np.random.default_rng(37),
+    )
+    result_b = resolve_light_ball_special_combination(
+        state,
+        (2, 1),
+        (2, 2),
+        np.random.default_rng(37),
+    )
+    damaged, records = apply_blocker_damage(state, result_a.damage_events)
+
+    assert len(result_a.transformations) == 1
+    assert result_a.damage_events == result_b.damage_events
+    assert sum((2, 3) in event.cells for event in result_a.damage_events) == 1
+    assert len(records) == 1
+    assert records[0].blocker_type == BlockerType.ICE
+    assert damaged.blocker_hp[2, 3] == 3
+
+
+def test_light_ball_bomb_transformations_keep_overlapping_activations_separate():
+    tiles = np.full((5, 5), 2, dtype=np.uint8)
+    tiles[2, 1] = 255
+    tiles[2, 2] = 1
+    tiles[1, 2] = 1
+    tiles[3, 2] = 1
+    specials = np.zeros_like(tiles)
+    specials[2, 1] = SpecialType.LIGHT_BALL
+    specials[2, 2] = SpecialType.BOMB
+    blockers = np.zeros_like(tiles)
+    blocker_hp = np.zeros_like(tiles)
+    blockers[2, 2] = BlockerType.ICE
+    blocker_hp[2, 2] = 4
+    state = BoardState(
+        tiles=tiles,
+        specials=specials,
+        cell_mask=np.ones_like(tiles, dtype=np.bool_),
+        blockers=blockers,
+        blocker_hp=blocker_hp,
+    )
+
+    result = resolve_light_ball_special_combination(
+        state,
+        (2, 1),
+        (2, 2),
+        np.random.default_rng(41),
+    )
+    damaged, records = apply_blocker_damage(state, result.damage_events)
+    center_hits = [record for record in records if record.position == (2, 2)]
+
+    assert len(result.transformations) == 2
+    assert len(center_hits) == 3
+    assert [record.hit_order for record in center_hits] == [0, 1, 2]
+    assert damaged.blocker_hp[2, 2] == 1
+
+
 def test_special_swap_applies_blocker_damage_before_gravity():
     tiles = np.array(
         [
@@ -488,6 +665,44 @@ def test_special_swap_applies_blocker_damage_before_gravity():
     assert result.state.blocker_hp[2, 0] == 20 - len(result.blocker_damage)
     assert result.blocker_damage[0].previous_hp == 20
     assert result.blocker_damage[0].sources == frozenset({DamageSource.ROCKET})
+
+
+def test_combination_animation_records_preserve_damage_hit_order():
+    specials = np.zeros((5, 5), dtype=np.uint8)
+    specials[2, 1] = SpecialType.ROCKET_HORIZONTAL
+    specials[2, 2] = SpecialType.ROCKET_VERTICAL
+    blockers = np.zeros_like(specials)
+    blocker_hp = np.zeros_like(specials)
+    blockers[2, 2] = BlockerType.ICE
+    blocker_hp[2, 2] = 10
+    state = make_state(blockers, blocker_hp, specials)
+
+    result = Match3Engine(num_colors=3, seed=47).step(
+        state,
+        ((2, 1), (2, 2)),
+        record_events=True,
+    )
+    damage_event = next(
+        event
+        for event in result.animation_events
+        if event.event_type == AnimationEventType.BLOCKER_DAMAGE
+    )
+    target_records = [
+        record
+        for record in damage_event.blocker_damage
+        if record.position == (2, 2)
+    ]
+    event_types = [event.event_type for event in result.animation_events]
+
+    assert [record.hit_order for record in target_records] == [0, 1]
+    assert [record.previous_hp for record in target_records] == [10, 9]
+    assert [record.remaining_hp for record in target_records] == [9, 8]
+    assert event_types.index(AnimationEventType.SPECIAL_ACTIVATION) < event_types.index(
+        AnimationEventType.BLOCKER_DAMAGE
+    )
+    assert event_types.index(AnimationEventType.BLOCKER_DAMAGE) < event_types.index(
+        AnimationEventType.CLEAR
+    )
 
 
 def test_engine_applies_match_damage_and_records_hp_transition():

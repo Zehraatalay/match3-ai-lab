@@ -7,7 +7,7 @@ from numpy.typing import NDArray
 
 Observation: TypeAlias = dict[
     str,
-    NDArray[np.uint8] | NDArray[np.int8] | int,
+    NDArray[np.integer] | int,
 ]
 
 

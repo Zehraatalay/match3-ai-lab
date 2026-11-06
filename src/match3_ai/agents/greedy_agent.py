@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from match3_ai.agents.base import Observation
+from match3_ai.games.match3.environment import Match3LevelEnv
 from match3_ai.games.match3.rules import all_find_matches
 
 
@@ -27,14 +28,25 @@ def build_action_pairs(
 
 
 class GreedyAgent:
-    """select the valid action with the highest immediate match score."""
+    """Select the highest immediate match count, breaking ties by lowest action ID.
+
+    Special effects, cascades, blocker damage, and objectives are not scored.
+    """
 
     def select_action(self, observation: Observation) -> int:
-        board = observation["board"]
         action_mask = observation["action_mask"]
-
-        rows, cols = board.shape
-        action_pairs = build_action_pairs(rows, cols)
+        canonical = "tiles" in observation
+        if canonical:
+            rows, cols = (int(value) for value in observation["board_shape"])
+            board = np.where(
+                observation["cell_mask"][:rows, :cols],
+                observation["tiles"][:rows, :cols],
+                0,
+            )
+        else:
+            board = observation["board"]
+            rows, cols = board.shape
+            action_pairs = build_action_pairs(rows, cols)
 
         valid_actions = np.flatnonzero(action_mask)
 
@@ -47,7 +59,11 @@ class GreedyAgent:
         for action in valid_actions:
             action_id = int(action)
 
-            (r1, c1), (r2, c2) = action_pairs[action_id]
+            if canonical:
+                r1, c1, direction = Match3LevelEnv.decode_action(action_id)
+                r2, c2 = (r1, c1 + 1) if direction == 0 else (r1 + 1, c1)
+            else:
+                (r1, c1), (r2, c2) = action_pairs[action_id]
             # dogrudan observation icindeki boardı degistirseydik agent karar verirken environment stateini de yanlıslıkla degistirebilirdik so copy sart
             simulated_board = board.copy()
             # swap islemi

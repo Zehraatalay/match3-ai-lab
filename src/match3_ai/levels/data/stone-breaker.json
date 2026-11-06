@@ -1,0 +1,26 @@
+{
+  "level_id": "stone-breaker",
+  "name": "Stone Breaker",
+  "rows": 8,
+  "cols": 8,
+  "num_colors": 4,
+  "move_limit": 15,
+  "seed": 41005,
+  "cell_mask": [
+    [false, false, true, true, true, true, false, false],
+    [false, false, true, true, true, true, false, false],
+    [true, true, true, true, true, true, true, true],
+    [true, true, true, false, false, true, true, true],
+    [true, true, true, false, false, true, true, true],
+    [true, true, true, true, true, true, true, true],
+    [false, false, true, true, true, true, false, false],
+    [false, false, true, true, true, true, false, false]
+  ],
+  "blockers": [
+    {"position": [2, 1], "type": "STONE", "variant": "SINGLE"},
+    {"position": [2, 6], "type": "STONE", "variant": "DOUBLE"}
+  ],
+  "objectives": [
+    {"type": "CLEAR_ALL_BLOCKERS"}
+  ]
+}

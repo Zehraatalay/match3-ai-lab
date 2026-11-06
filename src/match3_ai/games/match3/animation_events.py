@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum, auto
 
-from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.blockers import BlockerDamageRecord
+from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.specials import SpecialType
 
 Position = tuple[int, int]

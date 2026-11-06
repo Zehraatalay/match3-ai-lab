@@ -1,0 +1,12 @@
+{
+  "level_id": "first-match",
+  "name": "First Match",
+  "rows": 6,
+  "cols": 6,
+  "num_colors": 5,
+  "move_limit": 5,
+  "seed": 41001,
+  "objectives": [
+    {"type": "COLLECT_TILES", "target": 30}
+  ]
+}

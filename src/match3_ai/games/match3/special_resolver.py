@@ -5,11 +5,11 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.blockers import (
     BlockerDamageEvent,
     DamageSource,
 )
+from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.special_activation import (
     TileTransformation,
     get_geometric_combination_passes,

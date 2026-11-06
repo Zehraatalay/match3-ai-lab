@@ -603,22 +603,41 @@ def draw_combination_effect(
             header_height,
         )
 
-        center = cell_center(
+        origin = cell_center(
             propeller_position,
             cell_size,
             padding,
             header_height,
         )
+        alpha = max(70, int(220 * (1.0 - progress)))
+        beam_progress = min(1.0, progress * 1.5)
 
-        radius = max(1, int(cell_size * 2.0 * progress))
-        alpha = int(200 * (1.0 - progress))
-
-        pygame.draw.circle(
-            overlay,
-            (170, 240, 255, alpha),
-            center,
-            radius,
-            width=5,
-        )
+        for target_position in sorted(combination.effect_cells):
+            if target_position == propeller_position:
+                continue
+            target = cell_center(
+                target_position,
+                cell_size,
+                padding,
+                header_height,
+            )
+            endpoint = (
+                int(origin[0] + (target[0] - origin[0]) * beam_progress),
+                int(origin[1] + (target[1] - origin[1]) * beam_progress),
+            )
+            pygame.draw.line(
+                overlay,
+                (170, 240, 255, alpha),
+                origin,
+                endpoint,
+                width=2,
+            )
+            if progress >= 0.45:
+                pygame.draw.circle(
+                    overlay,
+                    (205, 248, 255, alpha),
+                    endpoint,
+                    max(2, int(5 * (1.0 - progress))),
+                )
 
     surface.blit(overlay, (0, 0))

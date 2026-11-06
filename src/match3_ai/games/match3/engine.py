@@ -17,8 +17,8 @@ from match3_ai.games.match3.blockers import (
 )
 from match3_ai.games.match3.board import BoardState
 from match3_ai.games.match3.board_mechanics import (
-    apply_board_gravity,
     apply_blocker_damage,
+    apply_board_gravity,
     clear_board_matches,
     place_special_creations,
     refill_board_state,
@@ -44,6 +44,33 @@ from match3_ai.games.match3.specials import SpecialType
 
 Position = tuple[int, int]
 Action = tuple[Position, Position]
+
+DEFAULT_MAX_CASCADES = 200
+
+
+class CascadeLimitExceeded(RuntimeError):
+    """A bounded resolution failed to settle; context contains no board snapshots."""
+
+    def __init__(
+        self,
+        limit: int,
+        cascades_processed: int,
+        action: Action,
+        remaining_patterns: int,
+    ) -> None:
+        self.limit = limit
+        self.cascades_processed = cascades_processed
+        self.context = {
+            "max_cascades": limit,
+            "cascades_processed": cascades_processed,
+            "action": action,
+            "remaining_patterns": remaining_patterns,
+        }
+        super().__init__(
+            f"Cascade limit exceeded: limit={limit}, "
+            f"cascades_processed={cascades_processed}, action={action}, "
+            f"remaining_patterns={remaining_patterns}"
+        )
 
 
 def build_match_damage_events(
@@ -94,8 +121,25 @@ def count_occupied_cells(
     )
 
 
+def count_cleared_by_color(
+    state: BoardState,
+    positions: set[Position],
+    num_colors: int,
+) -> tuple[int, ...]:
+    counts = [0] * num_colors
+    for position in positions:
+        if not state.cell_mask[position]:
+            continue
+        tile = int(state.tiles[position])
+        if 1 <= tile <= num_colors:
+            counts[tile - 1] += 1
+    return tuple(counts)
+
+
 @dataclass(frozen=True, slots=True)
 class StepResult:
+    """Move result; cleared_by_color indexes color 1 at 0 and excludes colorless tiles."""
+
     state: BoardState
     valid: bool
     cleared_tiles: int
@@ -105,6 +149,7 @@ class StepResult:
     activation_history: tuple[ActivationResult, ...] = ()
     animation_events: tuple[AnimationEvent, ...] = ()
     blocker_damage: tuple[BlockerDamageRecord, ...] = ()
+    cleared_by_color: tuple[int, ...] = ()
 
 
 class Match3Engine:
@@ -112,7 +157,7 @@ class Match3Engine:
         self,
         num_colors: int,
         seed: int | None = None,
-        max_cascades: int = 100,
+        max_cascades: int = DEFAULT_MAX_CASCADES,
     ) -> None:
         if type(num_colors) is not int or not 3 <= num_colors <= 254:
             raise ValueError("num_colors must be an integer between 3 and 254")
@@ -239,6 +284,7 @@ class Match3Engine:
         )
 
         total_cleared = 0
+        total_cleared_by_color = [0] * self.num_colors
         blocker_damage_history: list[BlockerDamageRecord] = []
         cascade_count = 0
         is_initial_match = True
@@ -351,6 +397,13 @@ class Match3Engine:
                 current_state,
                 affected_cells,
             )
+            color_counts = count_cleared_by_color(
+                current_state,
+                affected_cells,
+                self.num_colors,
+            )
+            for index, count in enumerate(color_counts):
+                total_cleared_by_color[index] += count
 
             current_state = clear_board_matches(
                 current_state,
@@ -401,7 +454,9 @@ class Match3Engine:
 
         while patterns:
             if cascade_count >= self.max_cascades:
-                raise RuntimeError("Maximum cascade limit exceeded")
+                raise CascadeLimitExceeded(
+                    self.max_cascades, cascade_count, action, len(patterns)
+                )
 
             groups = group_patterns(
                 current_state.tiles,
@@ -498,12 +553,20 @@ class Match3Engine:
                 affected_cells,
             )
 
-            preserved_creations = sum(
-                1
+            preserved_creation_positions = {
+                creation.position
                 for creation in creations
                 if current_state.cell_mask[creation.position]
                 and current_state.tiles[creation.position] != 0
+            }
+            preserved_creations = len(preserved_creation_positions)
+            color_counts = count_cleared_by_color(
+                current_state,
+                affected_cells - preserved_creation_positions,
+                self.num_colors,
             )
+            for index, count in enumerate(color_counts):
+                total_cleared_by_color[index] += count
 
             current_state = clear_board_matches(
                 current_state,
@@ -602,4 +665,5 @@ class Match3Engine:
             activation_history=tuple(activation_history),
             animation_events=tuple(animation_events),
             blocker_damage=tuple(blocker_damage_history),
+            cleared_by_color=tuple(total_cleared_by_color),
         )
