@@ -26,21 +26,11 @@ def make_board(
         (rows, cols),
         dtype=int,
     ).astype(np.uint8)
-    blockers = (
-        np.zeros((rows, cols), dtype=np.uint8)
-        if blockers is None
-        else blockers
-    )
+    blockers = np.zeros((rows, cols), dtype=np.uint8) if blockers is None else blockers
     blocker_hp = (
-        np.zeros((rows, cols), dtype=np.uint8)
-        if blocker_hp is None
-        else blocker_hp
+        np.zeros((rows, cols), dtype=np.uint8) if blocker_hp is None else blocker_hp
     )
-    specials = (
-        np.zeros((rows, cols), dtype=np.uint8)
-        if specials is None
-        else specials
-    )
+    specials = np.zeros((rows, cols), dtype=np.uint8) if specials is None else specials
     tiles[np.isin(blockers, [BlockerType.CRATE, BlockerType.STONE])] = 0
     return BoardState(
         tiles=tiles,
@@ -103,9 +93,10 @@ def test_rocket_bomb_destroys_crate_before_same_move_gravity_and_refill(
     gravity_event = result.animation_events[gravity_index]
     refill_event = result.animation_events[refill_index]
 
-    assert damage_event.blocker_damage == result.blocker_damage[
-        : len(damage_event.blocker_damage)
-    ]
+    assert (
+        damage_event.blocker_damage
+        == result.blocker_damage[: len(damage_event.blocker_damage)]
+    )
     assert damage_event.state.blockers[1, 1] == BlockerType.NONE
     assert damage_event.state.blocker_hp[1, 1] == 0
     assert clear_event.state.blockers[1, 1] == BlockerType.NONE
@@ -161,9 +152,9 @@ def test_ice_direct_match_at_board_edge_takes_one_hit():
         build_match_damage_events((group_cells,), 3, 3),
     )
 
-    assert [(record.position, record.previous_hp, record.remaining_hp) for record in records] == [
-        ((0, 0), 2, 1)
-    ]
+    assert [
+        (record.position, record.previous_hp, record.remaining_hp) for record in records
+    ] == [((0, 0), 2, 1)]
     assert damaged.blockers[0, 0] == BlockerType.ICE
 
 

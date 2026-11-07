@@ -39,15 +39,11 @@ def assert_stable_state(state: BoardState) -> None:
     assert np.all(state.blocker_hp[state.blockers == BlockerType.NONE] == 0)
     assert np.all(state.blocker_hp[state.blockers != BlockerType.NONE] > 0)
     assert np.all(
-        state.tiles[
-            np.isin(state.blockers, [BlockerType.CRATE, BlockerType.STONE])
-        ]
+        state.tiles[np.isin(state.blockers, [BlockerType.CRATE, BlockerType.STONE])]
         == 0
     )
     assert np.all(
-        state.specials[
-            np.isin(state.blockers, [BlockerType.CRATE, BlockerType.STONE])
-        ]
+        state.specials[np.isin(state.blockers, [BlockerType.CRATE, BlockerType.STONE])]
         == SpecialType.NONE
     )
     assert np.all(
@@ -119,9 +115,10 @@ def test_fixed_blocker_takes_damage_across_moves_then_opens_for_refill():
     first_result = engine.step(first_state, actions[0])
 
     assert first_result.valid
-    assert [(record.previous_hp, record.remaining_hp) for record in first_result.blocker_damage] == [
-        (2, 1)
-    ]
+    assert [
+        (record.previous_hp, record.remaining_hp)
+        for record in first_result.blocker_damage
+    ] == [(2, 1)]
     assert first_result.state.blockers[0, 0] == BlockerType.CRATE
     assert_stable_state(first_result.state)
     assert_only_destroyed_blockers_changed(
@@ -355,22 +352,18 @@ def test_seeded_long_gameplay_stress_is_stable_and_deterministic():
 
     assert outcomes_a == outcomes_b
     assert len(states_a) == len(states_b) == 20
-    assert any(
-        record.destroyed
-        for outcome in outcomes_a
-        for record in outcome[3]
-    )
-    assert sum(
-        record.destroyed for outcome in outcomes_a for record in outcome[3]
-    ) >= 2
+    assert any(record.destroyed for outcome in outcomes_a for record in outcome[3])
+    assert sum(record.destroyed for outcome in outcomes_a for record in outcome[3]) >= 2
     assert any(outcome[1] > 0 for outcome in outcomes_a)
-    assert sum(
-        AnimationEventType.SPECIAL_ACTIVATION in outcome[4]
-        for outcome in outcomes_a
-    ) > 1
+    assert (
+        sum(
+            AnimationEventType.SPECIAL_ACTIVATION in outcome[4]
+            for outcome in outcomes_a
+        )
+        > 1
+    )
     assert any(
-        AnimationEventType.SPECIAL_CREATION in outcome[4]
-        for outcome in outcomes_a
+        AnimationEventType.SPECIAL_CREATION in outcome[4] for outcome in outcomes_a
     )
 
     for state_a, state_b in zip(states_a, states_b, strict=True):

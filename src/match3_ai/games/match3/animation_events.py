@@ -37,6 +37,7 @@ class SpecialCombinationInfo:
     destination_type: SpecialType
     effect_cells: frozenset[Position]
 
+
 @dataclass(frozen=True, slots=True)
 class AnimationEvent:
     event_type: AnimationEventType

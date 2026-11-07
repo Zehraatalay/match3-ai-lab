@@ -45,21 +45,11 @@ def make_state(
     if tiles is None:
         tiles = np.tile(np.array([1, 2, 3], dtype=np.uint8), (3, 1))
     rows, cols = tiles.shape
-    blockers = (
-        np.zeros((rows, cols), dtype=np.uint8)
-        if blockers is None
-        else blockers
-    )
+    blockers = np.zeros((rows, cols), dtype=np.uint8) if blockers is None else blockers
     blocker_hp = (
-        np.zeros((rows, cols), dtype=np.uint8)
-        if blocker_hp is None
-        else blocker_hp
+        np.zeros((rows, cols), dtype=np.uint8) if blocker_hp is None else blocker_hp
     )
-    specials = (
-        np.zeros((rows, cols), dtype=np.uint8)
-        if specials is None
-        else specials
-    )
+    specials = np.zeros((rows, cols), dtype=np.uint8) if specials is None else specials
     tiles = tiles.copy()
     tiles[np.isin(blockers, [BlockerType.CRATE, BlockerType.STONE])] = 0
     return BoardState(
@@ -124,20 +114,26 @@ def test_crate_and_stone_render_as_distinct_solid_obstacles():
     viewer = make_viewer(crate_state)
 
     crate_pixels = cell_pixels(render_board(viewer, crate_state), (1, 1))
-    assert np.count_nonzero(
-        (crate_pixels[:, :, 0] > crate_pixels[:, :, 1] * 1.3)
-        & (crate_pixels[:, :, 0] > crate_pixels[:, :, 2] * 1.5)
-    ) > 100
+    assert (
+        np.count_nonzero(
+            (crate_pixels[:, :, 0] > crate_pixels[:, :, 1] * 1.3)
+            & (crate_pixels[:, :, 0] > crate_pixels[:, :, 2] * 1.5)
+        )
+        > 100
+    )
 
     blockers[1, 1] = BlockerType.STONE
     stone_state = make_state(blockers=blockers, blocker_hp=blocker_hp)
     stone_pixels = cell_pixels(render_board(viewer, stone_state), (1, 1))
 
     assert not np.array_equal(crate_pixels, stone_pixels)
-    assert np.count_nonzero(
-        (stone_pixels[:, :, 0] > 70)
-        & (np.abs(stone_pixels[:, :, 0].astype(int) - stone_pixels[:, :, 2]) < 45)
-    ) > 100
+    assert (
+        np.count_nonzero(
+            (stone_pixels[:, :, 0] > 70)
+            & (np.abs(stone_pixels[:, :, 0].astype(int) - stone_pixels[:, :, 2]) < 45)
+        )
+        > 100
+    )
 
 
 def test_ice_overlay_keeps_underlying_tile_color_recognizable():
@@ -206,9 +202,7 @@ def test_ice_over_empty_intermediate_snapshot_renders_safely():
 
     pixels = cell_pixels(render_board(viewer, state), (1, 1))
 
-    assert np.count_nonzero(
-        (pixels[:, :, 1] > 170) & (pixels[:, :, 2] > 200)
-    ) > 100
+    assert np.count_nonzero((pixels[:, :, 1] > 170) & (pixels[:, :, 2] > 200)) > 100
 
 
 def test_blocker_arrays_are_rendered_from_animation_snapshot():
@@ -228,10 +222,13 @@ def test_blocker_arrays_are_rendered_from_animation_snapshot():
 
     pixels = cell_pixels(render_board(viewer, event.state), (0, 2))
 
-    assert np.count_nonzero(
-        (pixels[:, :, 0] > pixels[:, :, 1] * 1.3)
-        & (pixels[:, :, 0] > pixels[:, :, 2] * 1.5)
-    ) > 100
+    assert (
+        np.count_nonzero(
+            (pixels[:, :, 0] > pixels[:, :, 1] * 1.3)
+            & (pixels[:, :, 0] > pixels[:, :, 2] * 1.5)
+        )
+        > 100
+    )
 
 
 def test_blockers_stay_anchored_during_gravity_and_refill_playback():
@@ -284,12 +281,18 @@ def test_blockers_stay_anchored_during_gravity_and_refill_playback():
         cell_pixels(refill_pixels, (2, 1)),
     )
     refill_ice_cell = cell_pixels(refill_pixels, (1, 0))
-    assert np.count_nonzero(
-        (gravity_ice_cell[:, :, 1] > 170) & (gravity_ice_cell[:, :, 2] > 200)
-    ) > 100
-    assert np.count_nonzero(
-        (refill_ice_cell[:, :, 1] > 170) & (refill_ice_cell[:, :, 2] > 200)
-    ) > 100
+    assert (
+        np.count_nonzero(
+            (gravity_ice_cell[:, :, 1] > 170) & (gravity_ice_cell[:, :, 2] > 200)
+        )
+        > 100
+    )
+    assert (
+        np.count_nonzero(
+            (refill_ice_cell[:, :, 1] > 170) & (refill_ice_cell[:, :, 2] > 200)
+        )
+        > 100
+    )
     assert after_gravity.blockers[1, 0] == BlockerType.ICE
     assert after_refill.blockers[2, 1] == BlockerType.CRATE
 
@@ -399,9 +402,10 @@ def test_single_hit_animates_impact_and_hp_transition(monkeypatch):
     assert damaged_visual.hp == 1
     assert damaged_visual.damage_count == 1
     assert damaged_visual.visible
-    assert np.any(cell_pixels(viewer.screen, (1, 1)) != cell_pixels(
-        render_board(make_viewer(before), before), (1, 1)
-    ))
+    assert np.any(
+        cell_pixels(viewer.screen, (1, 1))
+        != cell_pixels(render_board(make_viewer(before), before), (1, 1))
+    )
 
 
 def test_multiple_hits_play_in_order_and_destroy_only_on_final_hit(monkeypatch):
@@ -544,8 +548,7 @@ def test_d_key_toggles_hp_debug_overlay(monkeypatch, toggle_count):
     viewer.update_animation = lambda: None
     viewer.clock = SimpleNamespace(tick=lambda fps: None)
     events = [
-        pygame.event.Event(pygame.KEYDOWN, key=pygame.K_d)
-        for _ in range(toggle_count)
+        pygame.event.Event(pygame.KEYDOWN, key=pygame.K_d) for _ in range(toggle_count)
     ]
     events.append(pygame.event.Event(pygame.QUIT))
     monkeypatch.setattr(pygame.event, "get", lambda: events)

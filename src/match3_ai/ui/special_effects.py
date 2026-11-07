@@ -454,10 +454,7 @@ def draw_combination_effect(
     # Rocket + Bomb
     # --------------------------------------------------
 
-    elif (
-        SpecialType.BOMB in special_types
-        and bool(special_types & rocket_types)
-    ):
+    elif SpecialType.BOMB in special_types and bool(special_types & rocket_types):
         center_row, center_col = position
 
         # Three horizontal beams.
@@ -568,12 +565,8 @@ def draw_combination_effect(
                 header_height,
             )
 
-            end_x = int(
-                center[0] + (target[0] - center[0]) * beam_progress
-            )
-            end_y = int(
-                center[1] + (target[1] - center[1]) * beam_progress
-            )
+            end_x = int(center[0] + (target[0] - center[0]) * beam_progress)
+            end_y = int(center[1] + (target[1] - center[1]) * beam_progress)
 
             pygame.draw.line(
                 overlay,

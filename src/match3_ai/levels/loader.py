@@ -34,7 +34,9 @@ def load_level(path: str | Path) -> LevelConfig:
     except FileNotFoundError as error:
         raise FileNotFoundError(f"level file not found: {level_path}") from error
     except UnicodeDecodeError as error:
-        raise ValueError(f"invalid JSON encoding in level file: {level_path}") from error
+        raise ValueError(
+            f"invalid JSON encoding in level file: {level_path}"
+        ) from error
 
     try:
         data = json.loads(raw_json)
@@ -62,9 +64,7 @@ def load_level(path: str | Path) -> LevelConfig:
     rows = data["rows"]
     cols = data["cols"]
     cell_mask = (
-        _parse_cell_mask(data["cell_mask"], rows, cols)
-        if "cell_mask" in data
-        else None
+        _parse_cell_mask(data["cell_mask"], rows, cols) if "cell_mask" in data else None
     )
     blockers = _parse_blockers(data.get("blockers", []))
     initial_specials = _parse_initial_specials(data.get("initial_specials", []))
@@ -204,7 +204,9 @@ def _parse_objectives(value: Any, num_colors: int) -> tuple[LevelObjective, ...]
             objective_type = ObjectiveType(objective_name)
         except ValueError as error:
             if objective_name == "REACH_SCORE":
-                raise ValueError("REACH_SCORE objectives are not supported yet") from error
+                raise ValueError(
+                    "REACH_SCORE objectives are not supported yet"
+                ) from error
             raise ValueError(f"unsupported objective type: {objective_name}") from error
 
         if objective_type == ObjectiveType.CLEAR_ALL_BLOCKERS:
@@ -218,7 +220,9 @@ def _parse_objectives(value: Any, num_colors: int) -> tuple[LevelObjective, ...]
         if item["target"] <= 0:
             raise ValueError(f"{label}.target must be a positive integer")
         color = item.get("color")
-        if color is not None and (type(color) is not int or not 1 <= color <= num_colors):
+        if color is not None and (
+            type(color) is not int or not 1 <= color <= num_colors
+        ):
             raise ValueError(f"{label}.color must be between 1 and num_colors")
         objectives.append(
             LevelObjective(

@@ -35,10 +35,47 @@ EXPECTED_LEVELS = (
 EXPECTED_MASKS = (
     None,
     ("##...##", "#.....#", ".......", ".......", ".......", "#.....#", "##...##"),
-    ("##...##", "#.....#", ".......", ".......", ".......", "#.....#", "##...##", "##...##"),
-    ("###..###", "##....##", "#......#", "........", "........", "#......#", "##....##", "###..###"),
-    ("##....##", "##....##", "........", "...##...", "...##...", "........", "##....##", "##....##"),
-    ("##....##", "#......#", "........", ".......#", "........", "#.......", "........", "##.....#", "###...##"),
+    (
+        "##...##",
+        "#.....#",
+        ".......",
+        ".......",
+        ".......",
+        "#.....#",
+        "##...##",
+        "##...##",
+    ),
+    (
+        "###..###",
+        "##....##",
+        "#......#",
+        "........",
+        "........",
+        "#......#",
+        "##....##",
+        "###..###",
+    ),
+    (
+        "##....##",
+        "##....##",
+        "........",
+        "...##...",
+        "...##...",
+        "........",
+        "##....##",
+        "##....##",
+    ),
+    (
+        "##....##",
+        "#......#",
+        "........",
+        ".......#",
+        "........",
+        "#.......",
+        "........",
+        "##.....#",
+        "###...##",
+    ),
 )
 
 
@@ -75,18 +112,16 @@ def test_level_design_dimensions_masks_and_move_limits(
         assert config.cell_mask is None
     else:
         actual_mask = tuple(
-            "".join("." if cell else "#" for cell in row)
-            for row in state.cell_mask
+            "".join("." if cell else "#" for cell in row) for row in state.cell_mask
         )
         assert actual_mask == expected_mask
 
 
 def test_level_blocker_variants_and_objectives_match_the_design():
     configs = [load_level(LEVEL_DATA / filename) for filename in LEVELS]
-    assert [
-        (item.blocker_type, item.variant)
-        for item in configs[1].blockers
-    ] == [(BlockerType.CRATE, "SINGLE")] * 4
+    assert [(item.blocker_type, item.variant) for item in configs[1].blockers] == [
+        (BlockerType.CRATE, "SINGLE")
+    ] * 4
     assert sorted(item.variant for item in configs[2].blockers) == [
         "DOUBLE",
         "DOUBLE",

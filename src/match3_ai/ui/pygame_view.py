@@ -176,7 +176,9 @@ class Match3Viewer:
         if demo_blockers and (level_number is not None or level_selection):
             raise ValueError("blocker demo mode cannot be combined with level mode")
         if level_number is not None and level_selection:
-            raise ValueError("direct level launch cannot be combined with level selection")
+            raise ValueError(
+                "direct level launch cannot be combined with level selection"
+            )
         if demo_blockers and (rows, cols, num_colors) != (8, 8, 5):
             raise ValueError("blocker demo mode requires an 8x8 board with 5 colors")
 
@@ -214,9 +216,7 @@ class Match3Viewer:
         self.show_blocker_hp = False
         self.quit_requested = False
         self.message = "Select two adjacent tiles."
-        self.rejected_swap: tuple[
-            tuple[int, int], tuple[int, int]
-        ] | None = None
+        self.rejected_swap: tuple[tuple[int, int], tuple[int, int]] | None = None
         self.rejection_start_time = 0
 
         # Animation playback state
@@ -282,8 +282,10 @@ class Match3Viewer:
         board_frame_width = board_width + 12
         board_frame_height = board_height + 12
         self.board_rect = pygame.Rect(
-            self.board_region_rect.x + (self.board_region_rect.width - board_frame_width) // 2,
-            self.board_region_rect.y + (self.board_region_rect.height - board_frame_height) // 2,
+            self.board_region_rect.x
+            + (self.board_region_rect.width - board_frame_width) // 2,
+            self.board_region_rect.y
+            + (self.board_region_rect.height - board_frame_height) // 2,
             board_frame_width,
             board_frame_height,
         )
@@ -469,7 +471,10 @@ class Match3Viewer:
         if getattr(self, "terminal_overlay_visible", False):
             self.handle_terminal_click(position)
             return
-        if getattr(self, "level_session", None) is not None and self.level_session.status != LevelStatus.IN_PROGRESS:
+        if (
+            getattr(self, "level_session", None) is not None
+            and self.level_session.status != LevelStatus.IN_PROGRESS
+        ):
             return
         if self.is_animating or self.rejected_swap is not None:
             return
@@ -583,12 +588,12 @@ class Match3Viewer:
         if getattr(self, "level_session", None) is None:
             return ()
         actions = [
-            "restart"
-            if self.level_session.status == LevelStatus.WON
-            else "retry"
+            "restart" if self.level_session.status == LevelStatus.WON else "retry"
         ]
         if self.level_session.status == LevelStatus.WON:
-            if self.level_number is not None and self.level_number < len(PACKAGED_LEVELS):
+            if self.level_number is not None and self.level_number < len(
+                PACKAGED_LEVELS
+            ):
                 actions.append("next")
             actions.append("select")
         else:
@@ -601,7 +606,9 @@ class Match3Viewer:
         return tuple(
             (
                 action,
-                pygame.Rect(start_x + index * (button_width + gap), top, button_width, 38),
+                pygame.Rect(
+                    start_x + index * (button_width + gap), top, button_width, 38
+                ),
             )
             for index, action in enumerate(actions)
         )
@@ -646,10 +653,7 @@ class Match3Viewer:
         activation_count = len(event.special_activations)
 
         if event.special_combination is not None:
-            return (
-                COMBINATION_DURATION
-                + activation_count * CHAIN_ACTIVATION_DURATION
-            )
+            return COMBINATION_DURATION + activation_count * CHAIN_ACTIVATION_DURATION
 
         if activation_count > 0:
             return activation_count * CHAIN_ACTIVATION_DURATION
@@ -710,8 +714,7 @@ class Match3Viewer:
             damage_count += 1
 
         destroying = (
-            current_record.destroyed
-            and hit_progress >= BLOCKER_DESTRUCTION_PROGRESS
+            current_record.destroyed and hit_progress >= BLOCKER_DESTRUCTION_PROGRESS
         )
         visuals[current_record.position] = BlockerDamageVisual(
             hp=(
@@ -811,9 +814,7 @@ class Match3Viewer:
 
         for source, destination in ((first, second), (second, first)):
             tile = int(self.previous_animation_state.tiles[source])
-            special = SpecialType(
-                int(self.previous_animation_state.specials[source])
-            )
+            special = SpecialType(int(self.previous_animation_state.specials[source]))
             start_x, start_y = self.cell_center(source)
             end_x, end_y = self.cell_center(destination)
             center = (
@@ -855,7 +856,9 @@ class Match3Viewer:
         hud_rect = getattr(
             self,
             "hud_rect",
-            pygame.Rect(PADDING - 6, HUD_TOP, self.width - 2 * (PADDING - 6), HUD_HEIGHT),
+            pygame.Rect(
+                PADDING - 6, HUD_TOP, self.width - 2 * (PADDING - 6), HUD_HEIGHT
+            ),
         )
         pygame.draw.rect(
             self.screen,
@@ -1114,7 +1117,9 @@ class Match3Viewer:
                 True,
                 TEXT_COLOR,
             )
-            self.screen.blit(details, (rect.right - details.get_width() - 18, rect.y + 17))
+            self.screen.blit(
+                details, (rect.right - details.get_width() - 18, rect.y + 17)
+            )
         pygame.display.flip()
 
     @staticmethod
@@ -1664,9 +1669,7 @@ class Match3Viewer:
                     continue
 
                 damage_visual = damage_visuals.get(position)
-                center = (
-                    *self.cell_center((row, col)),
-                )
+                center = (*self.cell_center((row, col)),)
                 if damage_visual is not None and not damage_visual.visible:
                     self.draw_blocker_destruction(
                         blocker_type,
@@ -1722,9 +1725,7 @@ class Match3Viewer:
                 tile = int(self.state.tiles[row, col])
                 special = SpecialType(int(self.state.specials[row, col]))
 
-                center = (
-                    *self.cell_center((row, col)),
-                )
+                center = (*self.cell_center((row, col)),)
 
                 self.draw_tile(tile, special, center)
 
@@ -1742,7 +1743,11 @@ class Match3Viewer:
 
             center = (
                 self.cell_center((0, destination_col))[0],
-                int(self.get_board_origin()[1] + interpolated_row * CELL_SIZE + CELL_SIZE // 2),
+                int(
+                    self.get_board_origin()[1]
+                    + interpolated_row * CELL_SIZE
+                    + CELL_SIZE // 2
+                ),
             )
 
             self.draw_tile(tile, special, center)
@@ -1790,7 +1795,9 @@ class Match3Viewer:
                     interpolated_row = start_row + (row - start_row) * progress
 
                     center_y = int(
-                        self.get_board_origin()[1] + interpolated_row * CELL_SIZE + CELL_SIZE // 2
+                        self.get_board_origin()[1]
+                        + interpolated_row * CELL_SIZE
+                        + CELL_SIZE // 2
                     )
                 else:
                     center_y = self.cell_center((row, col))[1]
@@ -1802,6 +1809,7 @@ class Match3Viewer:
                     special,
                     (center_x, center_y),
                 )
+
     def get_progressive_clear_cells(
         self,
         activation,
@@ -1821,10 +1829,7 @@ class Match3Viewer:
 
         # Horizontal Rocket: clear outward from the source column.
         if special_type == SpecialType.ROCKET_HORIZONTAL:
-            max_distance = max(
-                abs(col - source_col)
-                for _, col in affected_cells
-            )
+            max_distance = max(abs(col - source_col) for _, col in affected_cells)
 
             return {
                 (row, col)
@@ -1834,10 +1839,7 @@ class Match3Viewer:
 
         # Vertical Rocket: clear outward from the source row.
         if special_type == SpecialType.ROCKET_VERTICAL:
-            max_distance = max(
-                abs(row - source_row)
-                for row, _ in affected_cells
-            )
+            max_distance = max(abs(row - source_row) for row, _ in affected_cells)
 
             return {
                 (row, col)
@@ -1858,7 +1860,8 @@ class Match3Viewer:
                 if math.hypot(
                     row - source_row,
                     col - source_col,
-                ) <= max_distance * progress
+                )
+                <= max_distance * progress
             }
 
         # Other specials: progressively reveal affected cells.
@@ -1867,13 +1870,13 @@ class Match3Viewer:
         clear_count = int(len(ordered_cells) * progress)
 
         return set(ordered_cells[:clear_count])
+
     def get_visible_animation_state(self) -> BoardState:
         """Build a visual board while preserving pending chain activations."""
 
         if (
             not self.is_animating
-            or self.current_animation_type
-            != AnimationEventType.SPECIAL_ACTIVATION
+            or self.current_animation_type != AnimationEventType.SPECIAL_ACTIVATION
         ):
             return self.state
 
@@ -1932,8 +1935,7 @@ class Match3Viewer:
 
         # Preserve specials whose activation has not started yet.
         pending_positions = {
-            activation.position
-            for activation in activations[activation_index + 1 :]
+            activation.position for activation in activations[activation_index + 1 :]
         }
 
         cells_to_clear.difference_update(pending_positions)
@@ -1949,13 +1951,13 @@ class Match3Viewer:
                 visual_state.specials[row, col] = SpecialType.NONE
 
         return visual_state
+
     def get_transformed_cells(self) -> set[tuple[int, int]]:
         """Find cells whose special type changed during creation."""
 
         if (
             not self.is_animating
-            or self.current_animation_type
-            != AnimationEventType.SPECIAL_CREATION
+            or self.current_animation_type != AnimationEventType.SPECIAL_CREATION
             or self.previous_animation_state is None
         ):
             return set()
@@ -1969,13 +1971,9 @@ class Match3Viewer:
                 if not self.state.cell_mask[row, col]:
                     continue
 
-                previous_special = SpecialType(
-                    int(previous_state.specials[row, col])
-                )
+                previous_special = SpecialType(int(previous_state.specials[row, col]))
 
-                current_special = SpecialType(
-                    int(self.state.specials[row, col])
-                )
+                current_special = SpecialType(int(self.state.specials[row, col]))
 
                 if (
                     previous_special != current_special
@@ -1984,13 +1982,13 @@ class Match3Viewer:
                     transformed_cells.add((row, col))
 
         return transformed_cells
+
     def draw_special_creation_animation(self) -> None:
         """Animate newly created specials with a flash effect."""
 
         if (
             not self.is_animating
-            or self.current_animation_type
-            != AnimationEventType.SPECIAL_CREATION
+            or self.current_animation_type != AnimationEventType.SPECIAL_CREATION
             or self.previous_animation_state is None
         ):
             return
@@ -2000,9 +1998,7 @@ class Match3Viewer:
         if not transformed_cells:
             return
 
-        duration = ANIMATION_DURATIONS[
-            AnimationEventType.SPECIAL_CREATION
-        ]
+        duration = ANIMATION_DURATIONS[AnimationEventType.SPECIAL_CREATION]
 
         elapsed = pygame.time.get_ticks() - self.animation_start_time
 
@@ -2017,9 +2013,7 @@ class Match3Viewer:
         )
 
         for row, col in transformed_cells:
-            center = (
-                *self.cell_center((row, col)),
-            )
+            center = (*self.cell_center((row, col)),)
 
             # Phase 1: Keep the original tile visible.
             if progress < 0.25:
@@ -2072,13 +2066,13 @@ class Match3Viewer:
                 )
 
         self.screen.blit(overlay, (0, 0))
+
     def draw_special_activation(self) -> None:
         """render combination effects followed by chain reactions."""
 
         if (
             not self.is_animating
-            or self.current_animation_type
-            != AnimationEventType.SPECIAL_ACTIVATION
+            or self.current_animation_type != AnimationEventType.SPECIAL_ACTIVATION
         ):
             return
 
@@ -2182,6 +2176,7 @@ class Match3Viewer:
             rows=self.rows,
             cols=self.cols,
         )
+
     def draw_board(self) -> None:
         visual_state = self.get_visible_animation_state()
 
@@ -2269,7 +2264,9 @@ class Match3Viewer:
                                 AnimationEventType.SPECIAL_CREATION
                             ]
 
-                            elapsed = pygame.time.get_ticks() - self.animation_start_time
+                            elapsed = (
+                                pygame.time.get_ticks() - self.animation_start_time
+                            )
 
                             progress = min(
                                 1.0,
@@ -2375,6 +2372,7 @@ class Match3Viewer:
         self.draw_controls()
 
         pygame.display.flip()
+
     def run(self) -> None:
         running = True
 

@@ -342,12 +342,8 @@ class Match3Engine:
             special_combination = None
 
             if record_events:
-                source_type = SpecialType(
-                    int(current_state.specials[source])
-                )
-                destination_type = SpecialType(
-                    int(current_state.specials[destination])
-                )
+                source_type = SpecialType(int(current_state.specials[source]))
+                destination_type = SpecialType(int(current_state.specials[destination]))
 
                 if (
                     source_type != SpecialType.NONE

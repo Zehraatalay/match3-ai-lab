@@ -26,9 +26,12 @@ from match3_ai.games.match3.environment import Match3LevelEnv
 from match3_ai.training.reward_shaping import training_reward
 from match3_ai.training.seed_policy import (
     PARTITIONS,
+    SPRINT520_TRAINING_PARTITION,
+    STUDY_VALIDATION_PARTITIONS,
     seed_policy_metadata,
     validate_evaluation_partition,
     validate_partition,
+    validate_sprint520_training,
 )
 
 
@@ -69,23 +72,29 @@ class TrainingConfig:
     def __post_init__(self):
         if self.architecture not in ("mlp", "cnn", "dueling"):
             raise ValueError("architecture must be mlp, cnn or dueling")
+
         if self.algorithm not in ("vanilla", "double"):
             raise ValueError("algorithm must be vanilla or double")
+
         if self.reward_mode not in ("sparse", "pbrs"):
             raise ValueError("reward_mode must be sparse or pbrs")
+
         if (
             isinstance(self.shaping_beta, (bool, np.bool_))
             or not np.isfinite(self.shaping_beta)
             or self.shaping_beta < 0
         ):
             raise ValueError("shaping_beta must be finite and non-negative")
+
         if (
             type(self.evaluate_step_zero) is not bool
             or type(self.baseline_every_checkpoint) is not bool
         ):
             raise ValueError("evaluation switches must be booleans")
+
         if not self.baseline_every_checkpoint and not self.evaluate_step_zero:
             raise ValueError("baseline reuse requires step-zero evaluation")
+
         for key in (
             "environment_steps",
             "evaluation_episodes",
@@ -102,6 +111,7 @@ class TrainingConfig:
         ):
             if type(getattr(self, key)) is not int or getattr(self, key) <= 0:
                 raise ValueError(f"{key} must be a positive integer")
+
         for key in (
             "seed",
             "train_seed_start",
@@ -110,46 +120,92 @@ class TrainingConfig:
         ):
             if type(getattr(self, key)) is not int or getattr(self, key) < 0:
                 raise ValueError(f"{key} must be a non-negative integer")
+
         for key in ("epsilon_start", "epsilon_end", "gamma"):
             if not np.isfinite(getattr(self, key)) or not 0 <= getattr(self, key) <= 1:
                 raise ValueError(f"{key} must be in [0,1]")
+
         for key in ("learning_rate", "gradient_clip"):
             if not np.isfinite(getattr(self, key)) or getattr(self, key) <= 0:
                 raise ValueError(f"{key} must be positive and finite")
+
         if (
             self.epsilon_end > self.epsilon_start
             or self.batch_size > self.replay_capacity
         ):
             raise ValueError("invalid epsilon schedule or replay batch size")
+
         if (
             not isinstance(self.hidden_dims, tuple)
             or not self.hidden_dims
             or any(type(x) is not int or x <= 0 for x in self.hidden_dims)
         ):
             raise ValueError("hidden_dims must contain positive integers")
+
+        # episode sayisi transition butcesiyle konservatif olarak sinirlanir
         train_end = self.train_seed_start + self.environment_steps + 1
         eval_end = self.evaluation_seed_start + self.evaluation_episodes
+
         if max(self.train_seed_start, self.evaluation_seed_start) < min(
             train_end, eval_end
         ):
             raise ValueError(
                 "training and evaluation environment seeds must be disjoint"
             )
-        if self.seed_policy not in (None, "sprint5_8"):
+
+        if self.seed_policy not in (None, "sprint5_8", "sprint5_20"):
             raise ValueError("unknown seed policy")
+
         if self.seed_policy == "sprint5_8":
             validate_partition(
-                "training", self.train_seed_start, self.environment_steps
+                "training",
+                self.train_seed_start,
+                self.environment_steps,
             )
+
             validate_evaluation_partition(
                 self.evaluation_partition,
                 self.evaluation_seed_start,
                 self.evaluation_episodes,
             )
+
             agent_end = self.evaluation_agent_seed_start + self.evaluation_episodes - 1
+
             if any(
                 self.evaluation_agent_seed_start <= high and agent_end >= low
-                for low, high in PARTITIONS.values()
+                for low, high in (
+                    *PARTITIONS.values(),
+                    *STUDY_VALIDATION_PARTITIONS.values(),
+                )
+            ):
+                raise ValueError(
+                    "baseline agent seeds must be separate from environment seeds"
+                )
+
+        # uzun training butcesi eski seed partition sinirlarini degistirmeden ayrilir
+        if self.seed_policy == "sprint5_20":
+            validate_sprint520_training(
+                self.train_seed_start,
+                self.environment_steps,
+            )
+
+            validate_evaluation_partition(
+                self.evaluation_partition,
+                self.evaluation_seed_start,
+                self.evaluation_episodes,
+            )
+
+            agent_end = self.evaluation_agent_seed_start + self.evaluation_episodes - 1
+
+            reserved_partitions = [
+                *PARTITIONS.values(),
+                *STUDY_VALIDATION_PARTITIONS.values(),
+                SPRINT520_TRAINING_PARTITION,
+            ]
+
+            if any(
+                self.evaluation_agent_seed_start <= high and agent_end >= low
+                for low, high in reserved_partitions
             ):
                 raise ValueError(
                     "baseline agent seeds must be separate from environment seeds"
@@ -187,7 +243,7 @@ def evaluate_agents(
     names=("DQNAgent", "RandomAgent", "GreedyAgent"),
 ):
     """Evaluate fixed validation seeds without learning or exploration RNG use."""
-    if config.seed_policy == "sprint5_8":
+    if config.seed_policy in ("sprint5_8", "sprint5_20"):
         validate_evaluation_partition(
             config.evaluation_partition,
             config.evaluation_seed_start,
@@ -400,7 +456,10 @@ def train_dqn(config: TrainingConfig, output_dir, *, resume_from=None, observer=
             "seed_metadata": seeds,
             "level_config_id": level_config_id,
             "summary": round_summary,
-            "seed_policy": seed_policy_metadata(config.evaluation_partition)
+            "seed_policy": seed_policy_metadata(
+                config.evaluation_partition,
+                training_policy=config.seed_policy,
+            )
             if config.seed_policy
             else None,
             "evaluation_seconds_cumulative": evaluation_seconds,
@@ -671,8 +730,11 @@ def train_dqn(config: TrainingConfig, output_dir, *, resume_from=None, observer=
                 else None,
                 "training_reward_mode": config.reward_mode,
                 "evaluation_reward_mode": "sparse",
-                "seed_policy": seed_policy_metadata(config.evaluation_partition)
-                if config.seed_policy == "sprint5_8"
+                "seed_policy": seed_policy_metadata(
+                    config.evaluation_partition,
+                    training_policy=config.seed_policy,
+                )
+                if config.seed_policy
                 else None,
                 "torch_version": str(torch.__version__),
                 "numpy_version": np.__version__,

@@ -49,12 +49,8 @@ def make_state(
         )
     tiles = tiles.copy()
     shape = tiles.shape
-    specials = (
-        np.zeros(shape, dtype=np.uint8) if specials is None else specials.copy()
-    )
-    blockers = (
-        np.zeros(shape, dtype=np.uint8) if blockers is None else blockers.copy()
-    )
+    specials = np.zeros(shape, dtype=np.uint8) if specials is None else specials.copy()
+    blockers = np.zeros(shape, dtype=np.uint8) if blockers is None else blockers.copy()
     blocker_hp = (
         np.zeros(shape, dtype=np.uint8) if blocker_hp is None else blocker_hp.copy()
     )
@@ -153,8 +149,10 @@ def test_successful_swap_animates_both_tiles_and_advances_to_engine_snapshot(
     assert len(moving_tiles) == 2
     assert moving_tiles[0][2] == moving_tiles[1][2]
     assert moving_tiles[0][2] not in {
-        (PADDING + col * CELL_SIZE + CELL_SIZE // 2,
-         HEADER_HEIGHT + row * CELL_SIZE + CELL_SIZE // 2)
+        (
+            PADDING + col * CELL_SIZE + CELL_SIZE // 2,
+            HEADER_HEIGHT + row * CELL_SIZE + CELL_SIZE // 2,
+        )
         for row, col in swap_event.affected_cells
     }
 
@@ -358,18 +356,17 @@ def test_deterministic_demo_moves_complete_without_stale_ui_state(monkeypatch):
                 for record in event.blocker_damage
             )
         elif move_index == 1:
-            assert sum(
-                event.event_type == AnimationEventType.MATCH for event in events
-            ) >= 2
+            assert (
+                sum(event.event_type == AnimationEventType.MATCH for event in events)
+                >= 2
+            )
         else:
             assert any(
                 event.event_type == AnimationEventType.SPECIAL_ACTIVATION
                 for event in events
             )
             assert any(
-                record.destroyed
-                for event in events
-                for record in event.blocker_damage
+                record.destroyed for event in events for record in event.blocker_damage
             )
 
         while viewer.is_animating:
@@ -387,7 +384,9 @@ def test_deterministic_demo_moves_complete_without_stale_ui_state(monkeypatch):
         assert viewer.animation_events == ()
         assert viewer.selected is None
         for name in ("tiles", "specials", "blockers", "blocker_hp"):
-            assert np.array_equal(getattr(viewer.state, name), getattr(final_state, name))
+            assert np.array_equal(
+                getattr(viewer.state, name), getattr(final_state, name)
+            )
 
     assert not viewer.is_animating
     assert not np.any(viewer.state.blockers == BlockerType.ICE)
@@ -406,8 +405,8 @@ def test_ice_stays_at_its_cell_while_covered_tile_moves(monkeypatch):
     click_cell(viewer, (0, 1))
     click_cell(viewer, (0, 2))
     ice_draws = []
-    viewer.draw_blocker = lambda blocker_type, hp, center, damage_count=0: ice_draws.append(
-        (blocker_type, center)
+    viewer.draw_blocker = lambda blocker_type, hp, center, damage_count=0: (
+        ice_draws.append((blocker_type, center))
     )
 
     viewer.draw_board()

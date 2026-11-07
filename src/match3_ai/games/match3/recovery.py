@@ -35,8 +35,7 @@ def reshuffle_board(
         if not properties.contains_tile
     ]
     tile_positions = np.argwhere(
-        state.cell_mask
-        & ~np.isin(state.blockers, tile_forbidden_blockers)
+        state.cell_mask & ~np.isin(state.blockers, tile_forbidden_blockers)
     )
     row_indices = tile_positions[:, 0]
     col_indices = tile_positions[:, 1]

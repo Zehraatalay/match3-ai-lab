@@ -11,8 +11,12 @@ from match3_ai.games.match3.environment import Match3LevelEnv
 from match3_ai.games.match3.specials import SpecialType
 
 LEVEL_IDS = (
-    "first-match", "wooden-trouble", "double-trouble",
-    "frozen-garden", "stone-breaker", "blocker-mayhem",
+    "first-match",
+    "wooden-trouble",
+    "double-trouble",
+    "frozen-garden",
+    "stone-breaker",
+    "blocker-mayhem",
 )
 
 
@@ -114,7 +118,10 @@ def test_agents_accept_ice_special_combination_and_exclude_fixed_blockers(agent)
     board.specials[3, 2] = SpecialType.PROPELLER
     board.blockers[2, 2] = BlockerType.ICE
     board.blocker_hp[2, 2] = 2
-    for position, blocker_type in [((0, 0), BlockerType.CRATE), ((0, 1), BlockerType.STONE)]:
+    for position, blocker_type in [
+        ((0, 0), BlockerType.CRATE),
+        ((0, 1), BlockerType.STONE),
+    ]:
         board.tiles[position] = 0
         board.specials[position] = 0
         board.blockers[position] = blocker_type

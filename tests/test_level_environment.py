@@ -29,7 +29,7 @@ def first_action(observation: dict) -> int:
 
 def test_packaged_levels_have_one_fixed_observation_space():
     env = Match3LevelEnv()
-    assert len(env.level_ids) == 6
+    assert len(env.level_ids) == 9
     assert env.action_space == gym.spaces.Discrete(144)
 
     for level_id in env.level_ids:

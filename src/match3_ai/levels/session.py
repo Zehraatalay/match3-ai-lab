@@ -52,7 +52,10 @@ class LevelSession:
             raise ValueError("level sessions require at least one objective")
         if type(max_cascades) is not int or max_cascades <= 0:
             raise ValueError("max_cascades must be a positive integer")
-        if type(max_initialization_attempts) is not int or max_initialization_attempts <= 0:
+        if (
+            type(max_initialization_attempts) is not int
+            or max_initialization_attempts <= 0
+        ):
             raise ValueError("max_initialization_attempts must be a positive integer")
         for name, value in (("board_seed", board_seed), ("engine_seed", engine_seed)):
             if value is not None and (type(value) is not int or value < 0):
@@ -120,7 +123,9 @@ class LevelSession:
 
     def reset(self) -> BoardState:
         self.state = create_level_board(
-            self.config, max_attempts=self.max_initialization_attempts, seed=self._board_seed
+            self.config,
+            max_attempts=self.max_initialization_attempts,
+            seed=self._board_seed,
         )
         self.engine = Match3Engine(
             num_colors=self.config.num_colors,

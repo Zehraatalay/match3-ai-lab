@@ -47,9 +47,7 @@ def make_state(
         blockers = np.zeros_like(tiles)
     if blocker_hp is None:
         blocker_hp = np.zeros_like(tiles)
-    tiles[
-        np.isin(blockers, [BlockerType.CRATE, BlockerType.STONE])
-    ] = 0
+    tiles[np.isin(blockers, [BlockerType.CRATE, BlockerType.STONE])] = 0
     return BoardState(
         tiles=tiles,
         specials=specials,
@@ -113,9 +111,7 @@ def test_ordinary_match_damage_source_does_not_harm_stone():
     blocker_hp[2, 2] = 2
     state = make_state(blockers, blocker_hp)
     event = BlockerDamageEvent(
-        sources=frozenset(
-            {DamageSource.ADJACENT_MATCH, DamageSource.DIRECT_MATCH}
-        ),
+        sources=frozenset({DamageSource.ADJACENT_MATCH, DamageSource.DIRECT_MATCH}),
         cells=frozenset({(2, 2)}),
     )
 
@@ -164,9 +160,7 @@ def test_match_group_with_multiple_adjacent_cells_only_hits_crate_once():
     damaged, records = apply_blocker_damage(state, events)
 
     adjacent_events = [
-        event
-        for event in events
-        if DamageSource.ADJACENT_MATCH in event.sources
+        event for event in events if DamageSource.ADJACENT_MATCH in event.sources
     ]
     assert len(adjacent_events) == 1
     assert (1, 1) in adjacent_events[0].cells
@@ -190,11 +184,7 @@ def test_each_special_type_emits_an_independent_blocker_hit(
 ):
     blockers = np.zeros((5, 5), dtype=np.uint8)
     blocker_hp = np.zeros_like(blockers)
-    target_position = (
-        (1, 2)
-        if special_type == SpecialType.ROCKET_VERTICAL
-        else (2, 1)
-    )
+    target_position = (1, 2) if special_type == SpecialType.ROCKET_VERTICAL else (2, 1)
     blockers[target_position] = BlockerType.ICE
     blocker_hp[target_position] = 3
     specials = np.zeros_like(blockers)
@@ -688,9 +678,7 @@ def test_combination_animation_records_preserve_damage_hit_order():
         if event.event_type == AnimationEventType.BLOCKER_DAMAGE
     )
     target_records = [
-        record
-        for record in damage_event.blocker_damage
-        if record.position == (2, 2)
+        record for record in damage_event.blocker_damage if record.position == (2, 2)
     ]
     event_types = [event.event_type for event in result.animation_events]
 
@@ -736,9 +724,7 @@ def test_engine_applies_match_damage_and_records_hp_transition():
     assert [record.hit_order for record in result.blocker_damage] == list(
         range(len(result.blocker_damage))
     )
-    assert result.blocker_damage[0].sources == frozenset(
-        {DamageSource.ADJACENT_MATCH}
-    )
+    assert result.blocker_damage[0].sources == frozenset({DamageSource.ADJACENT_MATCH})
     assert result.state.blocker_hp[1, 0] == 20 - len(result.blocker_damage)
     assert result.blocker_damage[0].previous_hp == 20
     damage_events = [

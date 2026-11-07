@@ -89,9 +89,7 @@ def test_load_full_json_with_mask_blockers_specials_and_objectives(tmp_path):
         BlockerPlacement((1, 1), BlockerType.ICE, "THICK"),
     )
     assert [blocker.hp for blocker in config.blockers] == [2, 2]
-    assert config.initial_specials == (
-        InitialSpecial((1, 1), SpecialType.BOMB),
-    )
+    assert config.initial_specials == (InitialSpecial((1, 1), SpecialType.BOMB),)
     assert config.objectives == (
         LevelObjective(ObjectiveType.CLEAR_ALL_BLOCKERS),
         LevelObjective(ObjectiveType.COLLECT_TILES, target=8, color=2),
@@ -236,10 +234,13 @@ def test_six_levels_match_requested_limits_colors_and_objectives(
     assert (config.rows, config.cols) == expected_dimensions[filename]
     assert config.num_colors == num_colors
     assert config.move_limit == move_limit
-    assert tuple(
-        (objective.objective_type, objective.target, objective.color)
-        for objective in config.objectives
-    ) == expected_objectives
+    assert (
+        tuple(
+            (objective.objective_type, objective.target, objective.color)
+            for objective in config.objectives
+        )
+        == expected_objectives
+    )
 
 
 @pytest.mark.parametrize(
@@ -265,7 +266,9 @@ def test_six_levels_match_requested_limits_colors_and_objectives(
         ),
     ],
 )
-def test_clear_all_blockers_objective_constraints(tmp_path, blockers, objectives, error):
+def test_clear_all_blockers_objective_constraints(
+    tmp_path, blockers, objectives, error
+):
     path = write_level(tmp_path, base_level(blockers=blockers, objectives=objectives))
 
     with pytest.raises((TypeError, ValueError), match=error):
@@ -492,9 +495,7 @@ def test_loaded_nested_configuration_is_immutable(tmp_path):
             tmp_path,
             base_level(
                 cell_mask=[[True] * 4 for _ in range(4)],
-                blockers=[
-                    {"position": [1, 1], "type": "CRATE", "variant": "SINGLE"}
-                ],
+                blockers=[{"position": [1, 1], "type": "CRATE", "variant": "SINGLE"}],
                 objectives=[{"type": "CLEAR_ALL_BLOCKERS"}],
             ),
         )

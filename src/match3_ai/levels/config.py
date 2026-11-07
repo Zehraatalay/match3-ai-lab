@@ -80,7 +80,10 @@ class LevelConfig:
             raise ValueError("name must be a non-empty string")
 
         if self.cell_mask is not None:
-            if not isinstance(self.cell_mask, tuple) or len(self.cell_mask) != self.rows:
+            if (
+                not isinstance(self.cell_mask, tuple)
+                or len(self.cell_mask) != self.rows
+            ):
                 raise ValueError("cell_mask must contain exactly rows tuple rows")
             for row in self.cell_mask:
                 if not isinstance(row, tuple) or len(row) != self.cols:
@@ -135,9 +138,7 @@ class LevelConfig:
 
             blocker_type = blockers_by_position.get(special.position)
             if blocker_type in (BlockerType.CRATE, BlockerType.STONE):
-                raise ValueError(
-                    "specials cannot be placed on CRATE or STONE blockers"
-                )
+                raise ValueError("specials cannot be placed on CRATE or STONE blockers")
 
         clear_all_count = 0
         for objective in self.objectives:
@@ -164,9 +165,7 @@ class LevelConfig:
         if clear_all_count > 1:
             raise ValueError("duplicate CLEAR_ALL_BLOCKERS objective")
         if self.blockers and clear_all_count != 1:
-            raise ValueError(
-                "levels containing blockers require CLEAR_ALL_BLOCKERS"
-            )
+            raise ValueError("levels containing blockers require CLEAR_ALL_BLOCKERS")
         if clear_all_count and not self.blockers:
             raise ValueError(
                 "CLEAR_ALL_BLOCKERS is only valid when the level contains blockers"

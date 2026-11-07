@@ -103,8 +103,7 @@ def test_generation_does_not_modify_numpy_global_random_state():
 
 def test_masked_cells_are_empty_and_playable_cells_have_valid_colors():
     mask = tuple(
-        tuple(not (row == 0 and col == 0) for col in range(6))
-        for row in range(6)
+        tuple(not (row == 0 and col == 0) for col in range(6)) for row in range(6)
     )
     config = make_config(cell_mask=mask)
 
@@ -185,8 +184,7 @@ def test_repeated_calls_return_fresh_independent_board_states():
 
 def test_constrained_mask_fails_explicitly_after_bounded_attempts():
     mask = tuple(
-        tuple((row, col) in {(0, 0), (3, 3)} for col in range(4))
-        for row in range(4)
+        tuple((row, col) in {(0, 0), (3, 3)} for col in range(4)) for row in range(4)
     )
     config = make_config(rows=4, cols=4, cell_mask=mask)
 

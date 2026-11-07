@@ -72,10 +72,21 @@ def test_keyboard_selection_and_direct_level_launch():
 
 @pytest.mark.parametrize(
     ("arguments", "expected"),
-    [([], {"demo_blockers": False, "level_number": None, "level_selection": False}),
-     (["--demo-blockers"], {"demo_blockers": True, "level_number": None, "level_selection": False}),
-     (["--levels"], {"demo_blockers": False, "level_number": None, "level_selection": True}),
-     (["--level", "4"], {"demo_blockers": False, "level_number": 4, "level_selection": False})],
+    [
+        ([], {"demo_blockers": False, "level_number": None, "level_selection": False}),
+        (
+            ["--demo-blockers"],
+            {"demo_blockers": True, "level_number": None, "level_selection": False},
+        ),
+        (
+            ["--levels"],
+            {"demo_blockers": False, "level_number": None, "level_selection": True},
+        ),
+        (
+            ["--level", "4"],
+            {"demo_blockers": False, "level_number": 4, "level_selection": False},
+        ),
+    ],
 )
 def test_cli_modes_remain_separate(monkeypatch, arguments, expected):
     received = {}
@@ -116,7 +127,11 @@ def test_level_move_is_routed_through_session_and_hud_waits_for_animation(
     assert calls == [(action, True)]
     assert session.moves_remaining == before - 1
     assert viewer.engine is session.engine
-    assert viewer.state is not session.board if viewer.is_animating else viewer.state is session.board
+    assert (
+        viewer.state is not session.board
+        if viewer.is_animating
+        else viewer.state is session.board
+    )
 
     if viewer.is_animating:
         assert viewer.displayed_moves_remaining == before
@@ -147,9 +162,7 @@ def test_objective_hud_formats_blocker_any_color_and_color_specific_progress():
 
     viewer.level_config = replace(
         config,
-        objectives=(
-            replace(config.objectives[0], color=2),
-        ),
+        objectives=(replace(config.objectives[0], color=2),),
     )
     assert viewer.objective_label(progress, color=2) == "Blue tiles: 0 / 30"
 
@@ -230,8 +243,16 @@ def test_layout_regions_are_separate_and_fit_the_window(mode):
     assert viewer.board_region_rect.bottom < viewer.action_bar_rect.top
     assert viewer.board_region_rect.contains(viewer.board_rect)
     assert viewer.action_bar_rect == viewer.controls_rect
-    assert viewer.hud_rect.left == viewer.board_region_rect.left == viewer.action_bar_rect.left
-    assert viewer.hud_rect.right == viewer.board_region_rect.right == viewer.action_bar_rect.right
+    assert (
+        viewer.hud_rect.left
+        == viewer.board_region_rect.left
+        == viewer.action_bar_rect.left
+    )
+    assert (
+        viewer.hud_rect.right
+        == viewer.board_region_rect.right
+        == viewer.action_bar_rect.right
+    )
     assert viewer.action_bar_rect.bottom + PADDING - 6 == viewer.height
     assert viewer.action_bar_rect.right <= viewer.width
 
@@ -347,7 +368,9 @@ def test_fixed_window_centers_all_six_board_sizes_and_maps_cells(level_number):
     assert viewer.hud_rect.bottom < viewer.board_region_rect.top
     assert viewer.board_region_rect.bottom < viewer.action_bar_rect.top
     assert viewer.cell_at_pixel(*viewer.cell_center((0, 0))) == (0, 0)
-    assert viewer.cell_at_pixel(*viewer.cell_center((viewer.rows - 1, viewer.cols - 1))) == (
+    assert viewer.cell_at_pixel(
+        *viewer.cell_center((viewer.rows - 1, viewer.cols - 1))
+    ) == (
         viewer.rows - 1,
         viewer.cols - 1,
     )
@@ -551,7 +574,9 @@ def test_default_and_demo_keep_board_hit_testing_accurate():
     for viewer in (Match3Viewer(), Match3Viewer(demo_blockers=True)):
         cell = (4, 3)
         assert viewer.cell_at_pixel(*viewer.cell_center(cell)) == cell
-        assert viewer.cell_at_pixel(viewer.board_rect.left, viewer.board_rect.top) is None
+        assert (
+            viewer.cell_at_pixel(viewer.board_rect.left, viewer.board_rect.top) is None
+        )
 
 
 @pytest.mark.parametrize("level_number", range(1, 7))
@@ -617,7 +642,10 @@ def test_loss_overlay_and_level_selection_action():
     viewer.level_session.status = LevelStatus.LOST
     viewer.finish_level_presentation()
     assert viewer.terminal_overlay_visible
-    assert [action for action, _rect in viewer.terminal_buttons()] == ["retry", "select"]
+    assert [action for action, _rect in viewer.terminal_buttons()] == [
+        "retry",
+        "select",
+    ]
     viewer.handle_terminal_action("select")
     assert viewer.screen_mode == "selection"
     assert viewer.selected_level_number == 3

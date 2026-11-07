@@ -195,9 +195,7 @@ def get_special_effect_passes(
             raise ValueError("light Ball activation requires a target color")
 
         return (
-            frozenset(
-                light_ball_cells(state, target_color=target_color) | {position}
-            ),
+            frozenset(light_ball_cells(state, target_color=target_color) | {position}),
         )
 
     raise ValueError(f"unsupported special type: {special_type}")
@@ -230,9 +228,7 @@ def rocket_rocket_cells(
     """
     clear one horizontal row and one vertical column.
     """
-    return set().union(
-        *rocket_rocket_effect_passes(state, position)
-    )
+    return set().union(*rocket_rocket_effect_passes(state, position))
 
 
 def rocket_rocket_effect_passes(
@@ -268,20 +264,24 @@ def rocket_bomb_effect_passes(
 
         if 0 <= target_row < state.rows:
             passes.append(
-                frozenset(rocket_cells(
-                    state,
-                    position=(target_row, col),
-                    horizontal=True,
-                ))
+                frozenset(
+                    rocket_cells(
+                        state,
+                        position=(target_row, col),
+                        horizontal=True,
+                    )
+                )
             )
 
         if 0 <= target_col < state.cols:
             passes.append(
-                frozenset(rocket_cells(
-                    state,
-                    position=(row, target_col),
-                    horizontal=False,
-                ))
+                frozenset(
+                    rocket_cells(
+                        state,
+                        position=(row, target_col),
+                        horizontal=False,
+                    )
+                )
             )
 
     return tuple(passes)

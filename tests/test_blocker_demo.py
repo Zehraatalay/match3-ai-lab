@@ -53,9 +53,10 @@ def test_demo_board_contains_requested_blockers_and_is_playable():
     assert detect_patterns(state.tiles) == []
     assert find_valid_moves(state)
     assert viewer.seed == BLOCKER_DEMO_SEED
-    assert viewer.engine.rng.bit_generator.state == np.random.default_rng(
-        BLOCKER_DEMO_SEED
-    ).bit_generator.state
+    assert (
+        viewer.engine.rng.bit_generator.state
+        == np.random.default_rng(BLOCKER_DEMO_SEED).bit_generator.state
+    )
 
 
 def test_demo_board_generation_is_reproducible_for_same_seed():
@@ -81,9 +82,10 @@ def test_demo_reset_restores_initial_board_and_rng_seed():
     assert np.array_equal(viewer.state.blockers, initial.blockers)
     assert np.array_equal(viewer.state.blocker_hp, initial.blocker_hp)
     assert viewer.seed == BLOCKER_DEMO_SEED
-    assert viewer.engine.rng.bit_generator.state == np.random.default_rng(
-        BLOCKER_DEMO_SEED
-    ).bit_generator.state
+    assert (
+        viewer.engine.rng.bit_generator.state
+        == np.random.default_rng(BLOCKER_DEMO_SEED).bit_generator.state
+    )
 
 
 def test_default_viewer_still_uses_existing_blocker_free_seeded_board():

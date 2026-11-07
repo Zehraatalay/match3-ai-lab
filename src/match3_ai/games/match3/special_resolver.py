@@ -22,11 +22,13 @@ from match3_ai.games.match3.specials import SpecialType
 
 Position = tuple[int, int]
 
+
 @dataclass(frozen=True, slots=True)
 class SpecialActivationStep:
     position: Position
     special_type: SpecialType
     effect_cells: frozenset[Position]
+
 
 @dataclass(frozen=True, slots=True)
 class ActivationResult:
@@ -63,13 +65,13 @@ def _damage_events_for_passes(
     effect_passes: tuple[frozenset[Position], ...],
 ) -> tuple[BlockerDamageEvent, ...]:
     sources = frozenset(
-        _damage_source_for_special(special_type)
-        for special_type in special_types
+        _damage_source_for_special(special_type) for special_type in special_types
     )
     return tuple(
         BlockerDamageEvent(sources=sources, cells=effect_cells)
         for effect_cells in effect_passes
     )
+
 
 def resolve_special_activation(
     state: BoardState,

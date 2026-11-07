@@ -1,0 +1,162 @@
+{
+  "level_id": "frozen-garden-v2",
+  "name": "Frozen Garden",
+  "rows": 8,
+  "cols": 8,
+  "num_colors": 5,
+  "move_limit": 10,
+  "seed": 41004,
+  "cell_mask": [
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ],
+    [
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    [
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  ],
+  "blockers": [
+    {
+      "position": [
+        1,
+        3
+      ],
+      "type": "ICE",
+      "variant": "THIN"
+    },
+    {
+      "position": [
+        1,
+        4
+      ],
+      "type": "ICE",
+      "variant": "THICK"
+    },
+    {
+      "position": [
+        2,
+        2
+      ],
+      "type": "ICE",
+      "variant": "THIN"
+    },
+    {
+      "position": [
+        2,
+        5
+      ],
+      "type": "ICE",
+      "variant": "THICK"
+    },
+    {
+      "position": [
+        3,
+        2
+      ],
+      "type": "ICE",
+      "variant": "THIN"
+    },
+    {
+      "position": [
+        3,
+        5
+      ],
+      "type": "ICE",
+      "variant": "THICK"
+    },
+    {
+      "position": [
+        4,
+        3
+      ],
+      "type": "ICE",
+      "variant": "THIN"
+    },
+    {
+      "position": [
+        4,
+        4
+      ],
+      "type": "ICE",
+      "variant": "THICK"
+    }
+  ],
+  "objectives": [
+    {
+      "type": "CLEAR_ALL_BLOCKERS"
+    }
+  ]
+}

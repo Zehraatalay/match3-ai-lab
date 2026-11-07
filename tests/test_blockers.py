@@ -192,7 +192,12 @@ def test_fixed_blockers_cannot_participate_in_swaps(blocker_type):
     blocker_hp = np.zeros_like(tiles)
     blockers[1, 1] = blocker_type
     blocker_hp[1, 1] = 1
-    state = BoardState(tiles, np.ones_like(tiles, dtype=np.bool_), blockers=blockers, blocker_hp=blocker_hp)
+    state = BoardState(
+        tiles,
+        np.ones_like(tiles, dtype=np.bool_),
+        blockers=blockers,
+        blocker_hp=blocker_hp,
+    )
 
     assert not is_valid_swap(state, (1, 1), (1, 0))
     assert not is_valid_swap(state, (1, 0), (1, 1))

@@ -12,19 +12,41 @@ htmlcov/
 venv/
 env/
 
-# IDE
+# IDE and operating system
 .vscode/
 .idea/
-
-# macOS
 .DS_Store
 
 # Environment variables
 .env
 .env.*
 
-# Experiment artifacts
+# Model checkpoints and experiment outputs
 experiments/results/
 checkpoints/
 *.pt
 *.pth
+
+# Intermediate analysis artifacts
+analysis/data/*
+!analysis/data/stage2_ml_dataset.csv
+analysis/tables/
+
+# Local development documentation
+AGENTS.md
+docs/sprint*.md
+docs/overnight_rl_research.md
+
+# Local archives and backups
+match3-audit.zip
+README.backup.md
+
+# Temporary files
+*.log
+*.tmp
+
+# Keep selected figures for the published report
+analysis/figures/*
+!analysis/figures/win_rate_comparison.png
+!analysis/figures/stage2_board_difficulty_distribution.png
+!analysis/figures/stage2_spatial_validation_correlations.png

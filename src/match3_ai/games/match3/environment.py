@@ -237,6 +237,23 @@ class Match3LevelEnv(gym.Env):
     """
 
     metadata: ClassVar[dict] = {"render_modes": []}
+    # mevcut seed namespace konumlari korunur ve yeni level kimlikleri sona eklenir
+    LEVEL_REGISTRY_ORDER: ClassVar[tuple[str, ...]] = (
+        "blocker-mayhem",
+        "double-trouble",
+        "first-match",
+        "frozen-garden",
+        "stone-breaker",
+        "wooden-trouble",
+        "wooden-trouble-v2",
+        "double-trouble-v2",
+        "frozen-garden-v2",
+    )
+    LEVEL_VERSION_PARENTS: ClassVar[dict[str, str]] = {
+        "wooden-trouble-v2": "wooden-trouble",
+        "double-trouble-v2": "double-trouble",
+        "frozen-garden-v2": "frozen-garden",
+    }
     MAX_ROWS: ClassVar[int] = 9
     MAX_COLS: ClassVar[int] = 8
     MAX_OBJECTIVES: ClassVar[int] = 2
@@ -252,17 +269,45 @@ class Match3LevelEnv(gym.Env):
         *,
         max_cascades: int = DEFAULT_MAX_CASCADES,
         max_initialization_attempts: int = DEFAULT_LEVEL_INITIALIZATION_ATTEMPTS,
+        record_events: bool = False,
+        level_config: LevelConfig | None = None,
     ) -> None:
         super().__init__()
         if type(max_cascades) is not int or max_cascades <= 0:
             raise ValueError("max_cascades must be a positive integer")
-        if type(max_initialization_attempts) is not int or max_initialization_attempts <= 0:
+        if (
+            type(max_initialization_attempts) is not int
+            or max_initialization_attempts <= 0
+        ):
             raise ValueError("max_initialization_attempts must be a positive integer")
+        if type(record_events) is not bool:
+            raise TypeError("record_events must be a boolean")
+        self.record_events = record_events
         self.max_cascades = max_cascades
         self.max_initialization_attempts = max_initialization_attempts
         self._configs = self._load_packaged_levels()
         if level_id not in self._configs:
             raise ValueError(f"unknown level_id: {level_id}")
+        if level_config is not None:
+            if not isinstance(level_config, LevelConfig):
+                raise TypeError("level_config must be a LevelConfig")
+            level_config.__post_init__()
+            if level_config.level_id != level_id:
+                raise ValueError(
+                    "level_config must retain the selected packaged level ID"
+                )
+            if level_config.rows > self.MAX_ROWS or level_config.cols > self.MAX_COLS:
+                raise ValueError("level_config exceeds padded board shape")
+            if (
+                not level_config.objectives
+                or len(level_config.objectives) > self.MAX_OBJECTIVES
+                or any(
+                    item.target is not None and item.target > 65535
+                    for item in level_config.objectives
+                )
+            ):
+                raise ValueError("level_config exceeds observation objective capacity")
+            self._configs[level_id] = level_config
         self.level_id = level_id
         self.config = self._configs[level_id]
         self.session: LevelSession | None = None
@@ -277,12 +322,16 @@ class Match3LevelEnv(gym.Env):
             {
                 "tiles": spaces.Box(0, 255, (self.MAX_ROWS, self.MAX_COLS), np.uint8),
                 "specials": spaces.Box(
-                    0, max(int(value) for value in SpecialType),
-                    (self.MAX_ROWS, self.MAX_COLS), np.uint8,
+                    0,
+                    max(int(value) for value in SpecialType),
+                    (self.MAX_ROWS, self.MAX_COLS),
+                    np.uint8,
                 ),
                 "blockers": spaces.Box(
-                    0, max(int(value) for value in BlockerType),
-                    (self.MAX_ROWS, self.MAX_COLS), np.uint8,
+                    0,
+                    max(int(value) for value in BlockerType),
+                    (self.MAX_ROWS, self.MAX_COLS),
+                    np.uint8,
                 ),
                 "blocker_hp": spaces.Box(
                     0, 255, (self.MAX_ROWS, self.MAX_COLS), np.uint8
@@ -325,7 +374,9 @@ class Match3LevelEnv(gym.Env):
             if config.level_id in configs:
                 raise ValueError(f"duplicate packaged level_id: {config.level_id}")
             if config.rows > cls.MAX_ROWS or config.cols > cls.MAX_COLS:
-                raise ValueError(f"level {config.level_id!r} exceeds padded board shape")
+                raise ValueError(
+                    f"level {config.level_id!r} exceeds padded board shape"
+                )
             if len(config.objectives) > cls.MAX_OBJECTIVES:
                 raise ValueError(
                     f"level {config.level_id!r} exceeds objective capacity "
@@ -339,7 +390,13 @@ class Match3LevelEnv(gym.Env):
             configs[config.level_id] = config
         if not configs:
             raise ValueError("no packaged JSON levels were found")
-        return configs
+        order = (
+            *cls.LEVEL_REGISTRY_ORDER,
+            *sorted(set(configs).difference(cls.LEVEL_REGISTRY_ORDER)),
+        )
+        return {
+            level_id: configs[level_id] for level_id in order if level_id in configs
+        }
 
     @property
     def level_ids(self) -> tuple[str, ...]:
@@ -470,7 +527,10 @@ class Match3LevelEnv(gym.Env):
             if unknown:
                 raise ValueError(f"unknown reset options: {', '.join(sorted(unknown))}")
             selected_level = options.get("level_id", self.level_id)
-            if not isinstance(selected_level, str) or selected_level not in self._configs:
+            if (
+                not isinstance(selected_level, str)
+                or selected_level not in self._configs
+            ):
                 raise ValueError(f"unknown level_id: {selected_level}")
             self.level_id = selected_level
         self.config = self._configs[self.level_id]
@@ -488,7 +548,12 @@ class Match3LevelEnv(gym.Env):
             self._engine_seed = self.config.seed
         else:
             children = np.random.SeedSequence(
-                [self._effective_episode_seed, self.level_ids.index(self.level_id)]
+                [
+                    self._effective_episode_seed,
+                    self.level_ids.index(
+                        self.LEVEL_VERSION_PARENTS.get(self.level_id, self.level_id)
+                    ),
+                ]
             ).spawn(2)
             board_seed, engine_seed = (
                 int(child.generate_state(1, dtype=np.uint32)[0]) for child in children
@@ -517,7 +582,9 @@ class Match3LevelEnv(gym.Env):
             raise RuntimeError("call reset() before step()")
         if self._episode_done:
             raise RuntimeError("episode finished; call reset()")
-        if isinstance(action, (bool, np.bool_)) or not self.action_space.contains(action):
+        if isinstance(action, (bool, np.bool_)) or not self.action_space.contains(
+            action
+        ):
             raise ValueError("action is outside the action space")
         action_id = int(action)
         if not self._action_mask()[action_id]:
@@ -526,7 +593,9 @@ class Match3LevelEnv(gym.Env):
         row, col, direction = self.decode_action(action_id)
         second = (row, col + 1) if direction == 0 else (row + 1, col)
         try:
-            result = self.session.step(((row, col), second))
+            result = self.session.step(
+                ((row, col), second), record_events=self.record_events
+            )
         except CascadeLimitExceeded as error:
             error.context.update(
                 level_id=self.level_id,
@@ -539,7 +608,9 @@ class Match3LevelEnv(gym.Env):
             )
             raise
         if not result.valid:
-            raise RuntimeError("find_valid_moves returned a move rejected by LevelSession")
+            raise RuntimeError(
+                "find_valid_moves returned a move rejected by LevelSession"
+            )
 
         terminated = self.session.status != LevelStatus.IN_PROGRESS
         reward = self._terminal_reward() if terminated else 0.0
@@ -586,6 +657,11 @@ class Match3LevelEnv(gym.Env):
             if blocker != BlockerType.NONE
         }
         return {
+            **(
+                {"resolution_events": () if result is None else result.animation_events}
+                if self.record_events
+                else {}
+            ),
             "level_id": self.level_id,
             "valid_action": valid,
             "moves_remaining": self.session.moves_remaining,
@@ -602,7 +678,9 @@ class Match3LevelEnv(gym.Env):
             "special_activations": {
                 "count": len(activation_steps),
                 "by_type": {
-                    special.name: sum(step.special_type == special for step in activation_steps)
+                    special.name: sum(
+                        step.special_type == special for step in activation_steps
+                    )
                     for special in SpecialType
                     if special != SpecialType.NONE
                 },
