@@ -15,7 +15,7 @@ dependencies = [
 
 [project.optional-dependencies]
 rl = [
-    "torch==2.15.0",
+    "torch>=2.2, <3",
 ]
 analysis = [
     "matplotlib>=3.8,<4",
