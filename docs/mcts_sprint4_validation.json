@@ -1,0 +1,300 @@
+{
+  "all_reference_traces_equivalent": true,
+  "reference_cases": 12,
+  "measurements": [
+    {
+      "level": "double-trouble-v2",
+      "rollout_policy": "random",
+      "value_mode": "terminal",
+      "simulations": 10,
+      "seconds_before": [
+        0.35187712509650737,
+        0.35034108406398445,
+        0.35182549990713596
+      ],
+      "seconds_after": [
+        0.3131026669871062,
+        0.3108267920324579,
+        0.3099709169473499
+      ],
+      "median_before": 0.35182549990713596,
+      "median_after": 0.3108267920324579,
+      "speedup": 1.131902104083733
+    },
+    {
+      "level": "double-trouble-v2",
+      "rollout_policy": "random",
+      "value_mode": "outcome",
+      "simulations": 10,
+      "seconds_before": [
+        0.35158291703555733,
+        0.35267804202158004,
+        0.3535211249254644
+      ],
+      "seconds_after": [
+        0.30978033295832574,
+        0.30903950007632375,
+        0.30950574995949864
+      ],
+      "median_before": 0.35267804202158004,
+      "median_after": 0.30950574995949864,
+      "speedup": 1.1394878514138456
+    },
+    {
+      "level": "double-trouble-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "terminal",
+      "simulations": 10,
+      "seconds_before": [
+        0.3876318339025602,
+        0.388838000013493,
+        0.3875214169966057
+      ],
+      "seconds_after": [
+        0.3031463749939576,
+        0.3029861249960959,
+        0.30487574997823685
+      ],
+      "median_before": 0.3876318339025602,
+      "median_after": 0.3031463749939576,
+      "speedup": 1.278695263666889
+    },
+    {
+      "level": "double-trouble-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "outcome",
+      "simulations": 10,
+      "seconds_before": [
+        0.3854230830911547,
+        0.389620375004597,
+        0.38642416696529835
+      ],
+      "seconds_after": [
+        0.3044094580691308,
+        0.30519758304581046,
+        0.30461179197300225
+      ],
+      "median_before": 0.38642416696529835,
+      "median_after": 0.30461179197300225,
+      "speedup": 1.2685791461400389
+    },
+    {
+      "level": "wooden-trouble-v2",
+      "rollout_policy": "random",
+      "value_mode": "terminal",
+      "simulations": 10,
+      "seconds_before": [
+        0.33236437500454485,
+        0.3316285830223933,
+        0.3327254999894649
+      ],
+      "seconds_after": [
+        0.29017254104837775,
+        0.290510541992262,
+        0.2901009999914095
+      ],
+      "median_before": 0.33236437500454485,
+      "median_after": 0.29017254104837775,
+      "speedup": 1.145402572565034
+    },
+    {
+      "level": "wooden-trouble-v2",
+      "rollout_policy": "random",
+      "value_mode": "outcome",
+      "simulations": 10,
+      "seconds_before": [
+        0.33697979210410267,
+        0.33727224997710437,
+        0.3369137919507921
+      ],
+      "seconds_after": [
+        0.29257895797491074,
+        0.2923221670789644,
+        0.2976784590864554
+      ],
+      "median_before": 0.33697979210410267,
+      "median_after": 0.29257895797491074,
+      "speedup": 1.1517567580270054
+    },
+    {
+      "level": "wooden-trouble-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "terminal",
+      "simulations": 10,
+      "seconds_before": [
+        0.32548883301205933,
+        0.3258648329647258,
+        0.3268557080300525
+      ],
+      "seconds_after": [
+        0.2614156670169905,
+        0.25937070802319795,
+        0.25884612498339266
+      ],
+      "median_before": 0.3258648329647258,
+      "median_after": 0.25937070802319795,
+      "speedup": 1.2563671335453217
+    },
+    {
+      "level": "wooden-trouble-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "outcome",
+      "simulations": 10,
+      "seconds_before": [
+        0.3263536669546738,
+        0.3269102079793811,
+        0.32455191703047603
+      ],
+      "seconds_after": [
+        0.25746954197529703,
+        0.25805954192765057,
+        0.2588600830640644
+      ],
+      "median_before": 0.3263536669546738,
+      "median_after": 0.25805954192765057,
+      "speedup": 1.2646448355169528
+    },
+    {
+      "level": "frozen-garden-v2",
+      "rollout_policy": "random",
+      "value_mode": "terminal",
+      "simulations": 10,
+      "seconds_before": [
+        0.7065252909669653,
+        0.7021992079680786,
+        0.7029055419843644
+      ],
+      "seconds_after": [
+        0.5976871669990942,
+        0.5977698339847848,
+        0.5969427499221638
+      ],
+      "median_before": 0.7029055419843644,
+      "median_after": 0.5976871669990942,
+      "speedup": 1.1760425533537173
+    },
+    {
+      "level": "frozen-garden-v2",
+      "rollout_policy": "random",
+      "value_mode": "outcome",
+      "simulations": 10,
+      "seconds_before": [
+        0.6000198340043426,
+        0.598419458954595,
+        0.6033039579633623
+      ],
+      "seconds_after": [
+        0.5136583750136197,
+        0.5164016250055283,
+        0.5159433750668541
+      ],
+      "median_before": 0.6000198340043426,
+      "median_after": 0.5159433750668541,
+      "speedup": 1.162956756497928
+    },
+    {
+      "level": "frozen-garden-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "terminal",
+      "simulations": 10,
+      "seconds_before": [
+        0.643414624966681,
+        0.6431511249393225,
+        0.6445403329562396
+      ],
+      "seconds_after": [
+        0.4918299170676619,
+        0.4907266669906676,
+        0.4903095830231905
+      ],
+      "median_before": 0.643414624966681,
+      "median_after": 0.4907266669906676,
+      "speedup": 1.3111466489326067
+    },
+    {
+      "level": "frozen-garden-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "outcome",
+      "simulations": 10,
+      "seconds_before": [
+        0.7072693330701441,
+        0.7038524999516085,
+        0.7075661669950932
+      ],
+      "seconds_after": [
+        0.5343539590248838,
+        0.5344050410203636,
+        0.5340899170842022
+      ],
+      "median_before": 0.7072693330701441,
+      "median_after": 0.5343539590248838,
+      "speedup": 1.3235970673087274
+    }
+  ],
+  "limitations": "Three samples per case, fixed order before then after; descriptive local timings, not a hardware-controlled experiment",
+  "profile_call_counts": [
+    {
+      "rollout_policy": "random",
+      "implementation": "before",
+      "counts": {
+        "find_valid_moves": 400,
+        "_action_mask": 320,
+        "_observation": 160
+      },
+      "value_mode": "terminal"
+    },
+    {
+      "rollout_policy": "random",
+      "implementation": "after",
+      "counts": {
+        "find_valid_moves": 330,
+        "_action_mask": 250,
+        "_observation": 90
+      },
+      "value_mode": "terminal"
+    },
+    {
+      "rollout_policy": "greedy",
+      "implementation": "before",
+      "counts": {
+        "find_valid_moves": 371,
+        "_action_mask": 307,
+        "_observation": 179
+      },
+      "value_mode": "terminal"
+    },
+    {
+      "rollout_policy": "greedy",
+      "implementation": "after",
+      "counts": {
+        "find_valid_moves": 266,
+        "_action_mask": 202,
+        "_observation": 74
+      },
+      "value_mode": "terminal"
+    }
+  ],
+  "historical_reuse": {
+    "directory": "results/mcts_baselines_main_100",
+    "manifest_sha256": "3f4f9018f4e066f13d3a2867faba327c26846420faf0d7d22b5bcf82b9ecf2e5",
+    "episodes_sha256": "87ae4eb8daf10127c7c2ef02fd8ce2cb68544fd1a77263b7fd830975bf54dbef",
+    "source_package_sha256": "d8b6d7db7ab7a273cb586a0a46d688f84c951c2965a3049d229df42b2888ff93",
+    "algorithm_semantics": "open-loop-uct-v1",
+    "records_verified": 1200,
+    "records_reusable": 600,
+    "new_episodes_required": 600,
+    "compatibility_basis": "audited critical-source boundary and exact reference-trace equivalence; unchanged valid-input search semantics",
+    "timing_warning": "Historical recomputation and optimized observation-reuse timings are labeled separately; do not interpret mixed-version latency contrasts"
+  },
+  "historical_files_unchanged": true,
+  "smoke": {
+    "records": 24,
+    "imported": 12,
+    "new": 12,
+    "errors": 0,
+    "time_limits": 0,
+    "invalid_actions": 0,
+    "contrast_rows": 60,
+    "withheld_timing_contrasts": 30
+  }
+}

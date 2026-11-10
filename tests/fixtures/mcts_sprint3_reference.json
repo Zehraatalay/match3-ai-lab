@@ -1,0 +1,779 @@
+{
+  "legacy_provenance": {
+    "package_source_sha256": "d8b6d7db7ab7a273cb586a0a46d688f84c951c2965a3049d229df42b2888ff93",
+    "cli_sha256": "7fe16a3bdb4f1eba60d518bcae6d0a8537cfa3c1bf5c0f58d7813574a594636e",
+    "critical_source_sha256": {
+      "src/match3_ai/agents/base.py": "02d726a09e10fb99f9bb5f485a689dd1ae7314f42792602e4d1a4e98e0b3c247",
+      "src/match3_ai/agents/greedy_agent.py": "457cc61849d9fb970e40e4943ad934fca96d59969c930f71cfc08428cb16a4c0",
+      "src/match3_ai/agents/mcts_simulator.py": "15140b62988ce458f5fa3c78f6eec95332c6f21f372a590b42eec98b5981a6d9",
+      "src/match3_ai/agents/mcts_value.py": "11ca252d26f4d285eb7610fcc875e553401d6a40deacc2420ba311432f91ceda",
+      "src/match3_ai/agents/objective_rollout.py": "25d9edbfb43a4fd848d89324d8ddb5e7a777fa2ad186e9a9ef9b2ec76df4292e",
+      "src/match3_ai/agents/observation_encoder.py": "adb520ea6844a5578f09a3264c8e1ba50cdd58c74019b068079e71e51e6f94be",
+      "src/match3_ai/agents/random_agent.py": "1e29a53eb0221e1efb0fc3614f4e061fcb77c8fcefddf4d96dab2804aa86fef3",
+      "src/match3_ai/agents/stochastic_mcts_agent.py": "4aaa154142ee3aae9eb78648241c91137701f2a41947b1a69f87db4cdd9a6e30",
+      "src/match3_ai/core/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/match3_ai/core/protocols.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/match3_ai/core/types.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/match3_ai/evaluation/analytics.py": "4aa9480decb4a47ba4dfd88cf1fe500963d20b1422df03ebffa77e22657622cd",
+      "src/match3_ai/evaluation/behavior_data.py": "26ddbb56c13844ac7ff44c914f18cb1ebf44a47814c0faec68269900d42c937e",
+      "src/match3_ai/evaluation/experiments.py": "f1d4cd81a80559bc48c8ce85fc7ddcbf71904c285ec274f27ce13539f3a49b65",
+      "src/match3_ai/evaluation/runner.py": "2d09e78776af520dc2f36c1f5832a5603282361d04dfd94b07243946706fc9d5",
+      "src/match3_ai/games/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/match3_ai/games/match3/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/match3_ai/games/match3/animation_events.py": "a7b67c72d24f473615f8fd497f72f97e24979e86f0997606dad97833f4f80ac1",
+      "src/match3_ai/games/match3/blockers.py": "879f782f15dff8ca04dacf5c4748fffc2e0865a605111fa01638d814b4e328e1",
+      "src/match3_ai/games/match3/board.py": "f5e4d2f73bb3404a30ddb47af22db4c4110f59ace10dc885e0750340176bac55",
+      "src/match3_ai/games/match3/board_mechanics.py": "9034fef97b27fd9c63af9a3c2ef13436433e297f4b3e69425efa54d4b4884843",
+      "src/match3_ai/games/match3/constants.py": "9d8d891f385697b59a5d4c38c4ae0fe88576d55bbc511261e1b20ddf8e714c2a",
+      "src/match3_ai/games/match3/engine.py": "266dc6f4a44b2d468ba2eb5d206fcdedb4bd34890641af1d71eeeee5c0ea9815",
+      "src/match3_ai/games/match3/environment.py": "01b173139c978f12cdf6881666cd870da044ae6dce73179a3d16d81e66c089af",
+      "src/match3_ai/games/match3/find_collision_board.py": "ac1ad9aa33f04696225fcf87b6c2b008d8078c391c204cc94d70ce6ee78f9193",
+      "src/match3_ai/games/match3/generator.py": "1b2b3441adb69a6b7b217369a4a36b433b2be3518eb6f1ff01978d25c5a55df3",
+      "src/match3_ai/games/match3/mechanics.py": "9bf4f2af04bda8a60af92d1ee309235cb06b1861b78a7ef0cd2403b5a75a44e0",
+      "src/match3_ai/games/match3/moves.py": "d1a95d4e14c4ed427cd9df667a64832da905e7114fcc11235e585ae6ffdf1e52",
+      "src/match3_ai/games/match3/pattern_detection.py": "8ca9677da89d3871ed7baf102d405996f3f0b8210b80f237bbf334d11c41309f",
+      "src/match3_ai/games/match3/recovery.py": "f090dc754c97daa2debd38aef00df68451d5bfed82683dce1963250c3a256a4e",
+      "src/match3_ai/games/match3/rules.py": "2c894369f378555b8c0f6e419fa3c4d9056f3ddf31f2dd53e385475b032b0478",
+      "src/match3_ai/games/match3/special_activation.py": "338e37cca7e5d55c51d67fef5a4301ad8c0841e5bc4f89fcf7be428f3c70a444",
+      "src/match3_ai/games/match3/special_resolver.py": "79e423716f26275ea00e141b6b7a3613c2901074dc601c49be1d40566b7bddb1",
+      "src/match3_ai/games/match3/special_selection.py": "fea306246d1bfac67d8a1515fef6448d681f992488f9df966858706386915511",
+      "src/match3_ai/games/match3/specials.py": "c027d16a05b15472e7fe310a2f10f158c0f4c797070c42261f39b8efd113416f",
+      "src/match3_ai/levels/__init__.py": "e5dd6665b3a00e84bd7db2101798dab155727f6d6b1673253ed3b9a2595df934",
+      "src/match3_ai/levels/config.py": "1054c527b3593439db3a96f73b09d12ba2c8274ed1c2c325adad0e378937a5db",
+      "src/match3_ai/levels/initialization.py": "7284b7a2c1907936a7b152ef6494e909ed89efcd927b5d0d977ba898c8c02907",
+      "src/match3_ai/levels/loader.py": "3e378ac980becb38bd3129ae8f2f64d1fc78d705779ea453ba6a6e8b0c5dfa98",
+      "src/match3_ai/levels/session.py": "28fc156f3977c27a3a03ccbdbf01c984afe399eb2a931733eecb977c6d0a040b",
+      "src/match3_ai/training/seed_policy.py": "ba3dd6b370fb63acee0775aba22b3630018ae453eac047e0d36ec5616caa523e"
+    }
+  },
+  "cases": [
+    {
+      "level": "double-trouble-v2",
+      "rollout_policy": "random",
+      "value_mode": "terminal",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 86,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "86": 4,
+              "38": 1,
+              "70": 2,
+              "118": 3
+            },
+            "action_values": {
+              "86": 1.0,
+              "38": -1.0,
+              "70": 0.0,
+              "118": 0.3333333333333333
+            }
+          }
+        },
+        {
+          "action": 45,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 3,
+            "node_count": 11,
+            "action_visits": {
+              "45": 10
+            },
+            "action_values": {
+              "45": -0.6
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.35187712509650737,
+        0.35034108406398445,
+        0.35182549990713596
+      ]
+    },
+    {
+      "level": "double-trouble-v2",
+      "rollout_policy": "random",
+      "value_mode": "outcome",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 86,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "86": 4,
+              "38": 1,
+              "70": 2,
+              "118": 3
+            },
+            "action_values": {
+              "86": 1.0333333333333332,
+              "38": -0.84,
+              "70": 0.09333333333333332,
+              "118": 0.4177777777777778
+            }
+          }
+        },
+        {
+          "action": 45,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 3,
+            "node_count": 11,
+            "action_visits": {
+              "45": 10
+            },
+            "action_values": {
+              "45": -0.5093333333333333
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.35158291703555733,
+        0.35267804202158004,
+        0.3535211249254644
+      ]
+    },
+    {
+      "level": "double-trouble-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "terminal",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 38,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "86": 1,
+              "70": 2,
+              "118": 1,
+              "38": 6
+            },
+            "action_values": {
+              "86": -1.0,
+              "70": 0.0,
+              "118": -1.0,
+              "38": 0.3333333333333333
+            }
+          }
+        },
+        {
+          "action": 55,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 9,
+            "action_visits": {
+              "118": 1,
+              "71": 1,
+              "70": 3,
+              "55": 3,
+              "86": 1,
+              "39": 1
+            },
+            "action_values": {
+              "118": -1.0,
+              "71": -1.0,
+              "70": 1.0,
+              "55": 1.0,
+              "86": -1.0,
+              "39": -1.0
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.3876318339025602,
+        0.388838000013493,
+        0.3875214169966057
+      ]
+    },
+    {
+      "level": "double-trouble-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "outcome",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 38,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "86": 1,
+              "70": 2,
+              "118": 1,
+              "38": 6
+            },
+            "action_values": {
+              "86": -0.84,
+              "70": 0.13000000000000006,
+              "118": -0.88,
+              "38": 0.43666666666666676
+            }
+          }
+        },
+        {
+          "action": 70,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 10,
+            "action_visits": {
+              "118": 1,
+              "71": 1,
+              "70": 4,
+              "55": 2,
+              "86": 1,
+              "39": 1
+            },
+            "action_values": {
+              "118": -0.84,
+              "71": -0.84,
+              "70": 0.6233333333333333,
+              "55": 0.13000000000000006,
+              "86": -0.88,
+              "39": -0.84
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.3854230830911547,
+        0.389620375004597,
+        0.38642416696529835
+      ]
+    },
+    {
+      "level": "wooden-trouble-v2",
+      "rollout_policy": "random",
+      "value_mode": "terminal",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 6,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 3,
+            "node_count": 11,
+            "action_visits": {
+              "54": 2,
+              "74": 3,
+              "6": 5
+            },
+            "action_values": {
+              "54": -1.0,
+              "74": 0.3333333333333333,
+              "6": -0.2
+            }
+          }
+        },
+        {
+          "action": 74,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "9": 3,
+              "74": 7
+            },
+            "action_values": {
+              "9": -1.0,
+              "74": -0.42857142857142855
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.33236437500454485,
+        0.3316285830223933,
+        0.3327254999894649
+      ]
+    },
+    {
+      "level": "wooden-trouble-v2",
+      "rollout_policy": "random",
+      "value_mode": "outcome",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 74,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 3,
+            "node_count": 11,
+            "action_visits": {
+              "54": 2,
+              "74": 4,
+              "6": 4
+            },
+            "action_values": {
+              "54": -0.875,
+              "74": 0.5583333333333333,
+              "6": 0.037500000000000006
+            }
+          }
+        },
+        {
+          "action": 68,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "22": 2,
+              "68": 6,
+              "38": 1,
+              "70": 1
+            },
+            "action_values": {
+              "22": 0.09166666666666673,
+              "68": 0.7166666666666668,
+              "38": -0.9,
+              "70": -0.9
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.33697979210410267,
+        0.33727224997710437,
+        0.3369137919507921
+      ]
+    },
+    {
+      "level": "wooden-trouble-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "terminal",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 74,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 3,
+            "node_count": 11,
+            "action_visits": {
+              "54": 1,
+              "6": 1,
+              "74": 8
+            },
+            "action_values": {
+              "54": -1.0,
+              "6": -1.0,
+              "74": 0.5
+            }
+          }
+        },
+        {
+          "action": 68,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "70": 1,
+              "38": 2,
+              "68": 6,
+              "22": 1
+            },
+            "action_values": {
+              "70": -1.0,
+              "38": 0.0,
+              "68": 0.6666666666666666,
+              "22": -1.0
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.32548883301205933,
+        0.3258648329647258,
+        0.3268557080300525
+      ]
+    },
+    {
+      "level": "wooden-trouble-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "outcome",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 74,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 3,
+            "node_count": 11,
+            "action_visits": {
+              "54": 1,
+              "6": 1,
+              "74": 8
+            },
+            "action_values": {
+              "54": -0.9,
+              "6": -0.9,
+              "74": 0.5770833333333334
+            }
+          }
+        },
+        {
+          "action": 68,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "70": 1,
+              "38": 4,
+              "68": 4,
+              "22": 1
+            },
+            "action_values": {
+              "70": -0.9,
+              "38": 0.07083333333333328,
+              "68": 0.5541666666666667,
+              "22": -0.85
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.3263536669546738,
+        0.3269102079793811,
+        0.32455191703047603
+      ]
+    },
+    {
+      "level": "frozen-garden-v2",
+      "rollout_policy": "random",
+      "value_mode": "terminal",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 24,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "37": 1,
+              "21": 2,
+              "36": 2,
+              "52": 1,
+              "9": 1,
+              "55": 1,
+              "24": 2
+            },
+            "action_values": {
+              "37": 1.0,
+              "21": 0.0,
+              "36": 0.0,
+              "52": 1.0,
+              "9": -1.0,
+              "55": -1.0,
+              "24": 1.0
+            }
+          }
+        },
+        {
+          "action": 21,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "52": 1,
+              "37": 1,
+              "55": 1,
+              "77": 1,
+              "59": 1,
+              "21": 2,
+              "72": 1,
+              "36": 2
+            },
+            "action_values": {
+              "52": -1.0,
+              "37": 1.0,
+              "55": -1.0,
+              "77": -1.0,
+              "59": -1.0,
+              "21": 1.0,
+              "72": 1.0,
+              "36": 1.0
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.7065252909669653,
+        0.7021992079680786,
+        0.7029055419843644
+      ]
+    },
+    {
+      "level": "frozen-garden-v2",
+      "rollout_policy": "random",
+      "value_mode": "outcome",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 24,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "37": 1,
+              "21": 2,
+              "36": 1,
+              "52": 2,
+              "9": 1,
+              "55": 1,
+              "24": 2
+            },
+            "action_values": {
+              "37": 1.06,
+              "21": 1.12,
+              "36": 1.02,
+              "52": 1.04,
+              "9": -0.825,
+              "55": -0.825,
+              "24": 1.13
+            }
+          }
+        },
+        {
+          "action": 55,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "72": 1,
+              "36": 1,
+              "59": 2,
+              "52": 1,
+              "37": 1,
+              "77": 1,
+              "55": 2,
+              "21": 1
+            },
+            "action_values": {
+              "72": 1.06,
+              "36": -0.825,
+              "59": 1.1,
+              "52": 1.06,
+              "37": -0.85,
+              "77": -0.85,
+              "55": 1.12,
+              "21": -0.825
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.6000198340043426,
+        0.598419458954595,
+        0.6033039579633623
+      ]
+    },
+    {
+      "level": "frozen-garden-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "terminal",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 9,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "37": 1,
+              "24": 2,
+              "52": 1,
+              "55": 1,
+              "9": 2,
+              "21": 2,
+              "36": 1
+            },
+            "action_values": {
+              "37": 1.0,
+              "24": 1.0,
+              "52": 1.0,
+              "55": 1.0,
+              "9": 1.0,
+              "21": 1.0,
+              "36": 1.0
+            }
+          }
+        },
+        {
+          "action": 21,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 1,
+            "node_count": 11,
+            "action_visits": {
+              "56": 1,
+              "41": 1,
+              "40": 1,
+              "38": 1,
+              "37": 1,
+              "36": 1,
+              "21": 1,
+              "43": 1,
+              "52": 1,
+              "25": 1
+            },
+            "action_values": {
+              "56": 1.0,
+              "41": -1.0,
+              "40": -1.0,
+              "38": -1.0,
+              "37": 1.0,
+              "36": -1.0,
+              "21": 1.0,
+              "43": 1.0,
+              "52": 1.0,
+              "25": 1.0
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.643414624966681,
+        0.6431511249393225,
+        0.6445403329562396
+      ]
+    },
+    {
+      "level": "frozen-garden-v2",
+      "rollout_policy": "greedy",
+      "value_mode": "outcome",
+      "env_seed": 10001000,
+      "agent_seed": 777,
+      "simulations": 10,
+      "trace": [
+        {
+          "action": 55,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "37": 1,
+              "24": 1,
+              "52": 2,
+              "55": 2,
+              "9": 1,
+              "21": 1,
+              "36": 2
+            },
+            "action_values": {
+              "37": 1.06,
+              "24": 1.0,
+              "52": 1.07,
+              "55": 1.09,
+              "9": 1.0,
+              "21": 1.08,
+              "36": 0.14750000000000008
+            }
+          }
+        },
+        {
+          "action": 21,
+          "stats": {
+            "simulations": 10,
+            "root_visits": 10,
+            "max_depth": 2,
+            "node_count": 11,
+            "action_visits": {
+              "84": 1,
+              "43": 1,
+              "41": 1,
+              "40": 1,
+              "52": 1,
+              "21": 2,
+              "7": 1,
+              "56": 2
+            },
+            "action_values": {
+              "84": -0.825,
+              "43": 1.02,
+              "41": 1.06,
+              "40": 1.1,
+              "52": -0.85,
+              "21": 1.0899999999999999,
+              "7": -0.85,
+              "56": 0.14750000000000008
+            }
+          }
+        }
+      ],
+      "seconds_before": [
+        0.7072693330701441,
+        0.7038524999516085,
+        0.7075661669950932
+      ]
+    }
+  ]
+}
