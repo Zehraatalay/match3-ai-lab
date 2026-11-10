@@ -1,151 +1,190 @@
-# Match-3 AI Lab
+# Match3-AI-Lab
 
-I built a playable Match-3 game in Python to experiment with reinforcement learning and gameplay data analysis.
+A Python Match-3 environment for gameplay AI, reinforcement learning, automated
+playtesting, procedural level generation, and reproducible agent comparisons.
+The project includes a playable game, learned policies, simulation-based search,
+and gameplay data analysis. Difficulty estimates describe agent performance;
+they are not measurements of human-perceived difficulty.
 
-The idea started with a simple question: **Can an AI agent learn to play Match-3 better than a rule-based strategy?**
+## Features
 
-I developed the game engine, introduced different level mechanics, trained AI agents, and analyzed gameplay data to understand what makes certain levels more challenging.
-
-## The Game
-
-The game includes six playable levels with different board layouts, objectives, and obstacles.
-
-Features include:
-- Match detection, cascades, and special tiles
-- Wooden, frozen, and stone blockers
-- Different board shapes and level objectives
-- Move limits and win/loss conditions
-- A playable Pygame interface
+- Match detection, cascades, gravity/refill, special tiles, and blocker damage
+- Crate, ice, and stone blockers; masked boards and finite-move objectives
+- Six original levels and three calibrated V2 variants
+- Gymnasium observations with legal-action masks
+- Random, Greedy, DQN/DDQN, PPO, classic MCTS, and Neural MCTS
+- Seeded level generation, validation, screening, and difficulty confirmation
+- Paired evaluation, Wilson confidence intervals, episode records, and provenance
+- Pygame UI and a numbered Data Science analysis workflow
 
 | Frozen Garden | Blocker Mayhem |
 |---|---|
 | ![Frozen Garden](docs/images/level4.png) | ![Blocker Mayhem](docs/images/level6.png) |
 
-## AI Agents
+## Architecture and agents
 
-I implemented and evaluated five agents:
+Game rules stay independent of agents, training, evaluation, and rendering.
+Agents share `select_action(observation)`; search agents additionally bind to an
+independent simulator of the current environment.
 
-- **Random:** Selects a random valid move.
-- **Greedy:** Uses a rule-based strategy to select moves.
-- **DDQN:** Learns action values through reinforcement learning.
-- **PPO:** Learns a policy using an actor-critic approach.
-- **Stochastic MCTS:** Plans each move with open-loop tree search and sampled future refills, without training a policy.
+| Agent | Implemented approach |
+|---|---|
+| Random | Uniform legal-action sampling |
+| Greedy | Largest immediate line-match count; ignores blocker/objective effects |
+| DQN / DDQN | Masked action values; MLP, CNN, and dueling architectures |
+| PPO | Masked MLP actor-critic with deterministic evaluation |
+| Classic MCTS | Fresh open-loop UCT tree; sampled stochastic futures and full rollouts |
+| Neural MCTS | Policy-value CNN, sampled successor states, PUCT, neural leaf values |
 
-Random and Greedy choose from the current board; DDQN and PPO use trained networks. MCTS instead spends a configurable simulation budget exploring future play on independent copies of the environment. It builds a fresh tree for each decision, uses UCT for selection, and backs up terminal or outcome-based values. The most-visited root action is selected; this finite search does not guarantee an optimal move.
+Neural MCTS is **AlphaZero-inspired**, adapted to a single-player stochastic
+environment. It uses the exact simulator, independent simulation RNG streams,
+and backups without alternating signs. It has no learned dynamics model,
+parallel search, or optimality guarantee. Its current encoder supports boards up
+to 9×8, 3–5 colors, two objectives, and move limits up to 32. Existing DQN/PPO
+encoder version 1 retains its stricter 15-move limit.
 
-### Evaluation Results
+See [classic MCTS](docs/stochastic_mcts.md) and
+[architecture and reproducibility](docs/reproducibility.md).
 
-The Random, Greedy, DDQN, and PPO comparison below uses 100 paired episodes per level.
+## Procedural level generation
 
-| Level | Random | Greedy | DDQN | PPO |
-|---|---:|---:|---:|---:|
-| Double Trouble | 62% | 64% | **77%** | 58% |
-| Wooden Trouble | 43% | 32% | **63%** | 51% |
-| Frozen Garden | 48% | 54% | **76%** | 66% |
-| **Macro average** | **51.0%** | **50.0%** | **72.0%** | **58.3%** |
+The generator samples reproducible level configurations with configurable board
+size, color count, move limits, and crate counts. Generated candidates are
+validated, screened, and confirmed on separate seed sets. The current generator
+uses single-layer crates; it does not generate every mechanic supported by the
+engine.
 
-DDQN achieved the highest observed win rate across all three evaluated levels.
+Difficulty bands use classic MCTS win rates: Easy 75–100%, Medium 40–75%, Hard
+10–40%, and Very Hard 0–10%. A confirmed match requires its Wilson interval to
+fit inside the requested band; borderline cases remain uncertain. Labels depend
+on the reference agent, simulation budget, and seed distribution. They do not
+establish solvability or human difficulty. Screening and confirmation can be
+computationally expensive.
 
-These results describe the selected trained policies on a limited evaluation set. They do not establish statistical superiority across other levels or training runs.
+## Experimental results
 
-Stochastic MCTS has a separate paired benchmark on the calibrated V2 levels.
-Its four-way rollout/value ablation, reproducible commands, source-provenance
-checks, and computational limits are documented in
-[Stochastic MCTS](docs/stochastic_mcts.md). Those results use different evaluation
-settings from the RL table above and should be interpreted separately.
+### Neural MCTS evaluation (AZ-4)
 
-MCTS also provides an agent-based level evaluation: paired win rates, objective completion, and winning moves describe difficulty under a specified agent, simulation budget, and seed set. These AI estimates are not measurements of human-perceived difficulty.
+Twenty paired development boards per Medium/Hard configuration, with **eight
+simulations per decision** for all search agents:
 
-## Gameplay Data Analysis
+| Agent | Medium | Compatible Hard |
+|---|---:|---:|
+| Random | 0% | 0% |
+| Greedy | 30% | 0% |
+| Classic MCTS (greedy rollout / outcome value) | **70%** | **30%** |
+| Untrained Neural MCTS | 10% | 0% |
+| Trained Neural MCTS (round 669) | 30% | 0% |
 
-I also explored gameplay data to understand how board characteristics and agent behavior relate to winning.
+The final checkpoint's Wilson 95% intervals are 14.5–51.9% on Medium and
+0–16.1% on compatible Hard. Neural MCTS did not outperform classic MCTS in this
+sample. Training improved the observed Medium count over initialization, but
+checkpoint progression was not monotonic and Hard performance did not improve.
 
-The analysis includes:
-- Exploratory data analysis
-- Paired statistical comparisons
-- Feature engineering from board states
-- Win prediction using Logistic Regression and Random Forest
-- Spatial feature experiments and grouped cross-validation
+The accepted Hard artifact uses six colors and is incompatible with the neural
+encoder. Evaluation explicitly used a previously confirmed **five-color Hard
+candidate**, preserving both original artifacts. Equal simulation counts do not
+equalize computation: classic MCTS rolls out to termination, while neural MCTS
+evaluates new leaves.
 
-Adding spatial features improved mean cross-validated ROC-AUC from **0.577 to 0.591**, although probability calibration metrics did not improve.
+The training environment was too easy: a blocker-free task collecting 30 tiles
+of any color in 10 moves produced 5,352 wins and only positive outcome targets.
+The final critic predicted exactly +1 on all 50 inspected evaluation boards.
+Random also won all five fresh training-control boards. Decreasing policy loss
+and near-zero value loss therefore did not establish general gameplay quality.
 
-For the methodology, detailed results, and limitations, see the [Results & Analysis Report](docs/RESULTS.md).
+[Evaluation report](docs/benchmarks/az4/evaluation_findings.md) ·
+[full metrics and intervals](docs/benchmarks/az4/summary.csv) ·
+[checkpoint progression](docs/benchmarks/az4/checkpoint_progression.csv)
 
-## Getting Started
+### Earlier RL and Data Science studies
 
-Use Python **3.11** (recommended). From the repository root:
+A separate 100-episode-per-level comparison reported DDQN macro win rate 72.0%,
+versus Random 51.0%, Greedy 50.0%, and PPO 58.3%. Those checkpoint-based results
+use a different protocol and must not be combined with AZ-4 as one head-to-head
+study. Spatial features increased mean grouped-CV ROC-AUC from 0.577 to 0.591,
+without improving the probability-calibration metrics.
+
+See [Results & Analysis](docs/RESULTS.md) for methods and limitations. The trained
+weights and some intermediate analysis data are not distributed in this source
+repository. Archived results are evidence, not promises of exact reproduction
+from a fresh clone.
+
+## Installation and usage
+
+Python **3.11** is recommended. From the repository root:
 
 ```bash
 python3.11 -m venv .venv
-source .venv/bin/activate              # Windows: .venv\Scripts\activate
-python -m pip install --upgrade pip
+source .venv/bin/activate
 python -m pip install -e ".[rl,ui,analysis,dev]"
 python -m pip check
 ```
 
-PyTorch installation depends on your operating system and accelerator. The `rl` extra installs a compatible PyTorch release; for CUDA-specific wheels, consult the official PyTorch installation instructions. The first installation requires network access.
-
-Launch the game:
-
-```bash
-python -m match3_ai.ui.pygame_view --levels
-```
-
-Run the test suite (from the repository root):
+On Windows, activate with `.venv\Scripts\activate`. The `rl` extra includes
+PyTorch; accelerator-specific installation depends on the platform. The core
+engine can instead be installed with `python -m pip install -e .`.
 
 ```bash
+# Run tests and static checks
 python -m pytest -q
-```
+ruff check .
+ruff format --check .
 
-### Reproducing experiments
-
-The following commands use the installed package and should be run **from the repository root**. Outputs are written to new directories; avoid reusing an existing output directory.
-
-**1. Re-run a Random vs. Greedy baseline experiment** (100 episodes per agent/level with fixed seeds):
-
-```bash
-python -m match3_ai.evaluation.benchmark \
-  --episodes 100 --env-seed 52000 --agent-seed 93000 \
-  --output-dir experiments/results/readme_baseline_52000
-```
-
-This regenerates baseline evaluation records, **not** the DDQN/PPO win-rate table above. The latter uses specific validation-selected trained checkpoints and a separate paired evaluation protocol.
-
-**2. Run short RL training smoke experiments** (not the published training budget):
-
-```bash
-python -m match3_ai.training.dqn --level-id blocker-mayhem \
-  --steps 1000 --seed 5700 --output-dir experiments/results/readme_dqn_smoke
+# Launch the game or inspect command-line options
+python -m match3_ai.ui.pygame_view --levels
+python -m match3_ai.training.dqn --help
 python -m match3_ai.training.ppo --help
+python scripts/benchmark_targeted_generation.py --help
+python scripts/benchmark_neural_mcts.py --help
 ```
 
-These commands verify that the training entry points are available; the short DQN run will not reproduce the published DDQN results. Use `--help` on an entry point to inspect its supported arguments before launching longer runs.
-
-**3. Inspect the gameplay analysis**:
-
-The committed `analysis/data/stage2_ml_dataset.csv` and numbered scripts under `analysis/` document the data-science workflow. Start with:
-
-```bash
-python analysis/01_data_understanding.py
-```
-
-Some analysis scripts consume intermediate files generated by earlier stages. Review their input paths before running later scripts.
-
-**4. Compare MCTS with Random and Greedy** (small development benchmark):
+A small new classic-MCTS development comparison:
 
 ```bash
 python scripts/benchmark_mcts_baselines.py \
-  --episodes 2 --simulations 30 \
+  --episodes 1 --simulations 2 \
   --env-seed-start 10002000 --agent-seed-start 20020000 \
-  --output-dir results/readme_mcts_smoke
+  --output-dir results/manual_mcts_smoke
 ```
 
-This runs Random, Greedy, random-rollout/terminal-value MCTS, and greedy-rollout/outcome-value MCTS on the three calibrated V2 levels, using paired initial boards. `--episodes` is per agent per level: this example runs 24 episodes. Results are saved incrementally to `episodes.csv`, `summary.csv`, and `manifest.json`; an existing output directory is rejected. See the [MCTS guide](docs/stochastic_mcts.md) for all four rollout/value configurations, confidence intervals, provenance checks, and completed benchmark artifacts. MCTS simulates games to termination, so even small benchmarks can take minutes.
+This runs Random, Greedy, and the default two classic-MCTS configurations on
+three V2 levels. Use a new output directory. Even small search experiments take
+longer than direct policy inference.
 
-**Reproducibility scope:** The published RL comparison in [Results & Analysis](docs/RESULTS.md) relies on validation-selected DDQN/PPO checkpoints and the original evaluation configuration. These trained checkpoint artifacts are **not included in this source archive**, so the exact reported RL win rates cannot be reproduced from a fresh clone using only the commands above. Baseline runs and new training runs are reproducible experiments, but should not be represented as reproductions of that table. Software/hardware differences may also affect training outcomes.
+For Neural MCTS training, checkpoint-based evaluation, profile fixtures, and
+exact AZ-4 commands, see [reproducibility](docs/reproducibility.md). The six
+selected checkpoint files must be supplied locally to repeat the trained
+comparison; they are intentionally excluded from Git. No experiment runs merely
+by importing a training module.
 
-## Tech Stack
+## Project structure
 
-Python · NumPy · PyTorch · Gymnasium · Pygame · Matplotlib · pytest
+```text
+src/match3_ai/
+  games/match3/   engine, board mechanics, Gymnasium environments
+  agents/         direct policies, neural networks, search and simulator
+  training/       DQN/PPO and search-guided policy-value training
+  levels/         configurations, generation, screening, calibration, export
+  evaluation/     episode runner, analytics, comparisons and benchmarks
+  ui/             Pygame interface
+scripts/          experiment command-line tools
+analysis/         gameplay data analysis and spatial-feature studies
+experiments/fixtures/  portable evaluation configurations
+results/          ignored local runs and checkpoints, retained on disk
+docs/             methodology, figures, and small published benchmark snapshots
+tests/            unit, integration, reproducibility, and regression tests
+```
 
-The game engine, AI agents, evaluation tools, and UI are kept separate so that gameplay mechanics can be tested independently of rendering and training.
+## Findings and limits
+
+- Task difficulty and target diversity matter more than training win rate alone
+- The neural critic learned an uninformative constant on a single easy task
+- Search-based difficulty is conditional on the agent and compute budget
+- Small development samples and one configuration per profile limit generalization
+- Neural training currently uses one fixed level, CPU Adam, bounded replay, and
+  completed-round checkpoint/resume; it has no configurable search-depth cap
+- Original checkpoints and full local training outputs stay outside the public
+  source tree; small benchmark evidence includes explicit provenance caveats
+
+Python · NumPy · PyTorch · Gymnasium · pandas · SciPy · scikit-learn · Pygame · pytest

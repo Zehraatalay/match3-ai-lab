@@ -152,11 +152,10 @@ def test_plateau_requires_multiple_metrics_and_sufficient_training():
 
 
 def test_archived_environment_and_paired_evaluation_reproduce(tmp_path):
-    archived = json.loads((overnight.ARCHIVE / "manifest.json").read_text())
+    archive = Path(__file__).resolve().parent / "fixtures/calibration"
+    archived = json.loads((archive / "manifest.json").read_text())
     variant = overnight.VARIANTS[0]
-    level = overnight.load_level(
-        overnight.ARCHIVE / archived["configurations"][variant]["path"]
-    )
+    level = overnight.load_level(archive / archived["configurations"][variant]["path"])
     config = type(
         "Config",
         (),

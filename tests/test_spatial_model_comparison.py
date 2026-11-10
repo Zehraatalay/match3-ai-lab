@@ -128,12 +128,12 @@ def test_historical_split_exactly_matches_original_algorithm(datasets):
 
 def test_real_historical_holdout_identity_reproduction():
     episodes = pd.read_csv(ROOT / "analysis/data/stage2_ml_dataset.csv")
-    spatial = pd.read_csv(ROOT / "analysis/data/stage2_spatial_features.csv")
+    spatial = pd.read_csv(ROOT / "tests/fixtures/spatial/stage2_spatial_features.csv")
     training, holdout = comparison.historical_split(
         comparison.validate_merge(episodes, spatial)
     )
     comparison.check_historical_holdout(
-        holdout, ROOT / "analysis/tables/stage2_model_predictions.csv"
+        holdout, ROOT / "tests/fixtures/spatial/stage2_model_predictions.csv"
     )
     assert len(comparison.board_keys(training)) == 480
 

@@ -19,6 +19,9 @@ rl = [
 ]
 analysis = [
     "matplotlib>=3.8,<4",
+    "pandas>=2.2,<4",
+    "scipy>=1.11,<2",
+    "scikit-learn>=1.4,<2",
 ]
 dev = [
     "pytest>=8.0",

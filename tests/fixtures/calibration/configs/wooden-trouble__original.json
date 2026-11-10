@@ -1,0 +1,27 @@
+{
+  "level_id": "wooden-trouble",
+  "name": "Wooden Trouble",
+  "rows": 7,
+  "cols": 7,
+  "num_colors": 3,
+  "move_limit": 10,
+  "seed": 41002,
+  "cell_mask": [
+    [false, false, true, true, true, false, false],
+    [false, true, true, true, true, true, false],
+    [true, true, true, true, true, true, true],
+    [true, true, true, true, true, true, true],
+    [true, true, true, true, true, true, true],
+    [false, true, true, true, true, true, false],
+    [false, false, true, true, true, false, false]
+  ],
+  "blockers": [
+    {"position": [1, 2], "type": "CRATE", "variant": "SINGLE"},
+    {"position": [3, 5], "type": "CRATE", "variant": "SINGLE"},
+    {"position": [4, 1], "type": "CRATE", "variant": "SINGLE"},
+    {"position": [5, 4], "type": "CRATE", "variant": "SINGLE"}
+  ],
+  "objectives": [
+    {"type": "CLEAR_ALL_BLOCKERS"}
+  ]
+}

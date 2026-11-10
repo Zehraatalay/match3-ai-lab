@@ -1,0 +1,100 @@
+[
+  {
+    "original_path": "results/mcts_baselines_main_100/episodes.csv",
+    "original_sha256": "87ae4eb8daf10127c7c2ef02fd8ce2cb68544fd1a77263b7fd830975bf54dbef",
+    "publication_path": "docs/benchmarks/mcts_baselines_main_100/episodes.csv",
+    "publication_sha256": "87ae4eb8daf10127c7c2ef02fd8ce2cb68544fd1a77263b7fd830975bf54dbef",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/mcts_baselines_main_100/summary.csv",
+    "original_sha256": "df212a52d48c8183698cdb909886c9aa30c98c84feb722a3b1874e4882772a83",
+    "publication_path": "docs/benchmarks/mcts_baselines_main_100/summary.csv",
+    "publication_sha256": "df212a52d48c8183698cdb909886c9aa30c98c84feb722a3b1874e4882772a83",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/mcts_baselines_main_100/manifest.json",
+    "original_sha256": "3f4f9018f4e066f13d3a2867faba327c26846420faf0d7d22b5bcf82b9ecf2e5",
+    "publication_path": "docs/benchmarks/mcts_baselines_main_100/manifest.json",
+    "publication_sha256": "3f4f9018f4e066f13d3a2867faba327c26846420faf0d7d22b5bcf82b9ecf2e5",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/mcts_ablation_100/episodes.csv",
+    "original_sha256": "d488d98ba6b95f134306f47af2343e721cc13c46d277917784abfef21edbf931",
+    "publication_path": "docs/benchmarks/mcts_ablation_100/episodes.csv",
+    "publication_sha256": "d488d98ba6b95f134306f47af2343e721cc13c46d277917784abfef21edbf931",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/mcts_ablation_100/summary.csv",
+    "original_sha256": "9b1a612ed9da7ec03054a2e61e737ff6bd516cd7c474b463597a978fd1da13b1",
+    "publication_path": "docs/benchmarks/mcts_ablation_100/summary.csv",
+    "publication_sha256": "9b1a612ed9da7ec03054a2e61e737ff6bd516cd7c474b463597a978fd1da13b1",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/mcts_ablation_100/manifest.json",
+    "original_sha256": "7e1bd3cf9cceafae8a5bcf7eb8fc9d13acc93faa37d87f8f43b04bb6950722fe",
+    "publication_path": "docs/benchmarks/mcts_ablation_100/manifest.json",
+    "publication_sha256": "4d88f5e7fd03803ceec0e01a5e99461733c3c5f0454697dd5f605373831418d1",
+    "home_paths_redacted": true
+  },
+  {
+    "original_path": "results/mcts_ablation_analysis_100/analysis_manifest.json",
+    "original_sha256": "15798c4c90efa2ed1dc44d1e874649786c4bb951e6abfb1c6df25fcb91211826",
+    "publication_path": "docs/benchmarks/mcts_ablation_analysis_100/analysis_manifest.json",
+    "publication_sha256": "28ce51abeca2f55e7a5a01e5a4d82f3b6a41304271298aab5927c25e4abf3918",
+    "home_paths_redacted": true
+  },
+  {
+    "original_path": "results/mcts_ablation_analysis_100/paired_comparisons.csv",
+    "original_sha256": "cb1308a9b43517c53f0d65ce9629b04e4aaeb1eee0eea57122d53f39bb6f7699",
+    "publication_path": "docs/benchmarks/mcts_ablation_analysis_100/paired_comparisons.csv",
+    "publication_sha256": "cb1308a9b43517c53f0d65ce9629b04e4aaeb1eee0eea57122d53f39bb6f7699",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/neural_mcts/evaluation/az4_controlled_01/episodes.csv",
+    "original_sha256": "41f8550f7a74642e5fc2161699e0309fec82233f0a52d95540b7467109c3a9a6",
+    "publication_path": "docs/benchmarks/az4/episodes.csv",
+    "publication_sha256": "41f8550f7a74642e5fc2161699e0309fec82233f0a52d95540b7467109c3a9a6",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/neural_mcts/evaluation/az4_controlled_01/summary.csv",
+    "original_sha256": "ac1a384bcfde1df896519b8dbdce0359ae3a1c3de85021ef3168165161f3c65c",
+    "publication_path": "docs/benchmarks/az4/summary.csv",
+    "publication_sha256": "ac1a384bcfde1df896519b8dbdce0359ae3a1c3de85021ef3168165161f3c65c",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/neural_mcts/evaluation/az4_controlled_01/manifest.json",
+    "original_sha256": "a8218b9fd82825a7e70969e23bb117f8e75eb76e3b160fdf82d1eef3b1fe4146",
+    "publication_path": "docs/benchmarks/az4/manifest.json",
+    "publication_sha256": "a8218b9fd82825a7e70969e23bb117f8e75eb76e3b160fdf82d1eef3b1fe4146",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/neural_mcts/evaluation/az4_controlled_01/checkpoint_progression.csv",
+    "original_sha256": "9c933260e1b0b88c44d1d83b1afe0ef68e20f3d7cd6f33fa2bfe7664709b38e4",
+    "publication_path": "docs/benchmarks/az4/checkpoint_progression.csv",
+    "publication_sha256": "9c933260e1b0b88c44d1d83b1afe0ef68e20f3d7cd6f33fa2bfe7664709b38e4",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/neural_mcts/evaluation/az4_controlled_01/evaluation_findings.json",
+    "original_sha256": "986aaee1e713d6e1098b4b114b0f1f498f9ab564d908a64574aaba25674b4de9",
+    "publication_path": "docs/benchmarks/az4/evaluation_findings.json",
+    "publication_sha256": "986aaee1e713d6e1098b4b114b0f1f498f9ab564d908a64574aaba25674b4de9",
+    "home_paths_redacted": false
+  },
+  {
+    "original_path": "results/neural_mcts/evaluation/az4_controlled_01/evaluation_findings.md",
+    "original_sha256": "12754eb0e10b13a4b82998dfc269bd1087277cfc6185c0047c5b13fa8aeb5282",
+    "publication_path": "docs/benchmarks/az4/evaluation_findings.md",
+    "publication_sha256": "12754eb0e10b13a4b82998dfc269bd1087277cfc6185c0047c5b13fa8aeb5282",
+    "home_paths_redacted": false
+  }
+]

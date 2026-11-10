@@ -171,7 +171,7 @@ would require fresh RT/GO timing runs after separate approval.
 
 ## Completed four-way development ablation
 
-The saved [summary](../results/mcts_ablation_100/summary.csv) contains 100 paired
+The saved [summary](benchmarks/mcts_ablation_100/summary.csv) contains 100 paired
 boards per level at 30 simulations, using the same seed starts as Sprint 3:
 
 | Level | RT | RO | GT | GO |
@@ -184,7 +184,7 @@ The completed manifest records 1,200 episodes: 600 audited historical RT/GO
 records and 600 new RO/GT records, with no recorded errors or time limits.
 Wilson intervals, objective completion, winning moves, and version-labeled
 timings are in the summary. Paired contrasts are saved in
-[paired_comparisons.csv](../results/mcts_ablation_analysis_100/paired_comparisons.csv);
+[paired_comparisons.csv](benchmarks/mcts_ablation_analysis_100/paired_comparisons.csv);
 the analysis manifest records 10,000 bootstrap samples and seed 42. No mode
 has the highest observed win rate on every level. These are exploratory
 development results, not evidence of universal superiority or human difficulty.
@@ -298,3 +298,8 @@ without speculative policy/value-network abstractions. The four-way comparison
 uses one agent RNG stream per board, pools stochastic histories, and mixes timing
 implementations as labeled above. No simulation-budget study or optimality claim
 is established by these artifacts.
+
+Publication copies live under `docs/benchmarks/`; original local `results/` files
+are retained but excluded from new commits. Redacted publication manifests are
+not substitutes for original artifacts in strict historical reuse. See
+[architecture and reproducibility](reproducibility.md).

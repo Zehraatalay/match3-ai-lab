@@ -27,6 +27,14 @@ checkpoints/
 *.pt
 *.pth
 
+# Local runs are retained on disk; portable evidence lives in docs/benchmarks
+/results/
+/build/
+/dist/
+.ipynb_checkpoints/
+.mypy_cache/
+.tox/
+
 # Intermediate analysis artifacts
 analysis/data/*
 !analysis/data/stage2_ml_dataset.csv

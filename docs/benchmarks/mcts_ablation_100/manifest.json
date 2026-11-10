@@ -226,7 +226,7 @@
   "platform": "macOS-15.0.1-arm64-arm-64bit",
   "cli_sha256": "0b8862e22dd28e775083badc44a7641985ce624f078a08b9d0a93d511bbd6055",
   "reuse": {
-    "directory": "/Users/zehraatalay/Desktop/match3-ai-lab/results/mcts_baselines_main_100",
+    "directory": "results/mcts_baselines_main_100",
     "manifest_sha256": "3f4f9018f4e066f13d3a2867faba327c26846420faf0d7d22b5bcf82b9ecf2e5",
     "episodes_sha256": "87ae4eb8daf10127c7c2ef02fd8ce2cb68544fd1a77263b7fd830975bf54dbef",
     "source_package_sha256": "d8b6d7db7ab7a273cb586a0a46d688f84c951c2965a3049d229df42b2888ff93",

@@ -1,5 +1,5 @@
 {
-  "source": "/Users/zehraatalay/Desktop/match3-ai-lab/results/mcts_ablation_100",
+  "source": "results/mcts_ablation_100",
   "source_manifest_sha256": "7e1bd3cf9cceafae8a5bcf7eb8fc9d13acc93faa37d87f8f43b04bb6950722fe",
   "source_episodes_sha256": "d488d98ba6b95f134306f47af2343e721cc13c46d277917784abfef21edbf931",
   "bootstrap_seed": 42,
