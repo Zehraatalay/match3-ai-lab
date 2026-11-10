@@ -1,0 +1,44 @@
+{
+  "label": "exploratory held-out development evaluation",
+  "paired_comparisons": {
+    "easy": {
+      "paired_boards": 5,
+      "trained_only_wins": 0,
+      "untrained_only_wins": 1
+    },
+    "medium": {
+      "paired_boards": 20,
+      "trained_only_wins": 5,
+      "untrained_only_wins": 1
+    },
+    "hard_compatible": {
+      "paired_boards": 20,
+      "trained_only_wins": 0,
+      "untrained_only_wins": 0
+    },
+    "training_control": {
+      "paired_boards": 5,
+      "trained_only_wins": 0,
+      "untrained_only_wins": 0
+    }
+  },
+  "training_diagnostics": {
+    "1": {
+      "replay_size": 29,
+      "policy_target_mean_entropy_nats": 1.2841453552246094,
+      "one_hot_policy_target_fraction": 0.17241379618644714,
+      "positive_outcome_fraction": 1.0
+    },
+    "669": {
+      "replay_size": 4096,
+      "policy_target_mean_entropy_nats": 0.013212932273745537,
+      "one_hot_policy_target_fraction": 0.97802734375,
+      "positive_outcome_fraction": 1.0
+    }
+  },
+  "round_1_equals_initialization": true,
+  "verified_profile_seed_boards": 50,
+  "verified_episode_records": 500,
+  "elapsed_seconds": 417.65565062500536,
+  "conclusion": "Final checkpoint improved observed Medium wins over initialization (6 vs 2), but had no Hard wins, fewer Easy wins, and fewer Medium/Hard wins than classic MCTS. No broad gameplay superiority or monotonic checkpoint improvement established."
+}

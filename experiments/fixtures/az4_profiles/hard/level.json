@@ -1,0 +1,105 @@
+{
+  "blockers": [
+    {
+      "position": [
+        0,
+        0
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        0,
+        1
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        1,
+        6
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        2,
+        3
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        2,
+        5
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        4,
+        1
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        5,
+        4
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        5,
+        6
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        6,
+        1
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        7,
+        0
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    },
+    {
+      "position": [
+        7,
+        2
+      ],
+      "type": "CRATE",
+      "variant": "SINGLE"
+    }
+  ],
+  "cols": 8,
+  "initial_specials": [],
+  "level_id": "generated-42-4",
+  "move_limit": 7,
+  "name": "Generated Level 4",
+  "num_colors": 6,
+  "objectives": [
+    {
+      "type": "CLEAR_ALL_BLOCKERS"
+    }
+  ],
+  "rows": 8,
+  "seed": 3986207137
+}

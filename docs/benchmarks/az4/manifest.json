@@ -1,0 +1,775 @@
+{
+  "label": "held-out development evaluation; not final test",
+  "status": "complete",
+  "config": {
+    "episodes": 20,
+    "easy_episodes": 5,
+    "control_episodes": 5,
+    "simulations": 8,
+    "env_seed_start": 31000000,
+    "agent_seed_start": 41000000
+  },
+  "profiles": {
+    "easy": {
+      "rows": 8,
+      "cols": 8,
+      "num_colors": 5,
+      "move_limit": 9,
+      "level_id": "generated-42-0",
+      "name": "Generated Level 0",
+      "seed": 3376120483,
+      "cell_mask": null,
+      "blockers": [
+        {
+          "position": [
+            0,
+            5
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            1,
+            4
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            3,
+            1
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            4,
+            5
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            5,
+            3
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            6,
+            4
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            7,
+            3
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        }
+      ],
+      "initial_specials": [],
+      "objectives": [
+        {
+          "objective_type": "CLEAR_ALL_BLOCKERS",
+          "target": null,
+          "color": null
+        }
+      ]
+    },
+    "medium": {
+      "rows": 8,
+      "cols": 8,
+      "num_colors": 5,
+      "move_limit": 8,
+      "level_id": "generated-42-1",
+      "name": "Generated Level 1",
+      "seed": 2176278138,
+      "cell_mask": null,
+      "blockers": [
+        {
+          "position": [
+            1,
+            5
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            2,
+            7
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            3,
+            0
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            3,
+            5
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            4,
+            4
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            4,
+            5
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            5,
+            7
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            6,
+            1
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            6,
+            3
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            6,
+            6
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            7,
+            0
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        }
+      ],
+      "initial_specials": [],
+      "objectives": [
+        {
+          "objective_type": "CLEAR_ALL_BLOCKERS",
+          "target": null,
+          "color": null
+        }
+      ]
+    },
+    "hard_compatible": {
+      "rows": 8,
+      "cols": 8,
+      "num_colors": 5,
+      "move_limit": 5,
+      "level_id": "generated-42-0",
+      "name": "Generated Level 0",
+      "seed": 3980425318,
+      "cell_mask": null,
+      "blockers": [
+        {
+          "position": [
+            0,
+            4
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            0,
+            5
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            1,
+            4
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            3,
+            0
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            4,
+            0
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            4,
+            3
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            5,
+            1
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            5,
+            7
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            6,
+            0
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            6,
+            7
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        },
+        {
+          "position": [
+            7,
+            5
+          ],
+          "blocker_type": 1,
+          "variant": "SINGLE"
+        }
+      ],
+      "initial_specials": [],
+      "objectives": [
+        {
+          "objective_type": "CLEAR_ALL_BLOCKERS",
+          "target": null,
+          "color": null
+        }
+      ]
+    },
+    "training_control": {
+      "rows": 8,
+      "cols": 8,
+      "num_colors": 5,
+      "move_limit": 10,
+      "level_id": "az-overnight-v1",
+      "name": "Custom Level",
+      "seed": 0,
+      "cell_mask": null,
+      "blockers": [],
+      "initial_specials": [],
+      "objectives": [
+        {
+          "objective_type": "COLLECT_TILES",
+          "target": 30,
+          "color": null
+        }
+      ]
+    }
+  },
+  "profile_provenance": {
+    "files": {
+      "results/plg/targeted_smoke/easy/level.json": "5c677d20b05d8f53dc7faafcd38fed687a12257efc6ead13112798b209512b6b",
+      "results/plg/final_acceptance/medium/level.json": "b8005b9b69067b8036a90cf7055b5db243308f2479b355b2bf24e6fb29bea200",
+      "results/plg/final_acceptance/hard/level.json": "ba15b468419974cd51598d7c9af96ae6a99f74e181862febfb12a58c3b610386",
+      "results/plg/final_acceptance/medium/generation_report.json": "f043d704ed372bb3d24f17162214738500f158a52993d5f4618db2022299b0b2"
+    },
+    "hard_note": "Accepted Hard artifact has 6 colors, unsupported by AZ-1. hard_compatible is candidate 0 from the saved Medium generation search; original artifacts unchanged.",
+    "hard_confirmation": {
+      "ci_lower": 0.15001174503655804,
+      "ci_upper": 0.3107053471500031,
+      "episodes": 100,
+      "level_id": "generated-42-0",
+      "status": "REJECT",
+      "target": "MEDIUM",
+      "win_rate": 0.22
+    },
+    "confirmation_search": {
+      "confirmation_episodes": 100,
+      "confirmation_seed": 100000,
+      "max_candidates": 5,
+      "mcts_simulations": 10,
+      "screening_episodes": 10,
+      "screening_seed": 1000,
+      "target": "MEDIUM"
+    }
+  },
+  "checkpoints": {
+    "Neural_round_0001": {
+      "rounds_completed": 1,
+      "updates": 0,
+      "attempts": 8,
+      "level_sha256": "11b632482decad27320b9afc57a7f723637a39a49c5ae6aeb5e58fe169a6835b",
+      "level_config": {
+        "rows": 8,
+        "cols": 8,
+        "num_colors": 5,
+        "move_limit": 10,
+        "level_id": "az-overnight-v1",
+        "name": "Custom Level",
+        "seed": 0,
+        "cell_mask": null,
+        "blockers": [],
+        "initial_specials": [],
+        "objectives": [
+          {
+            "objective_type": "COLLECT_TILES",
+            "target": 30,
+            "color": null
+          }
+        ]
+      },
+      "config": {
+        "device": "cpu",
+        "collection_rounds": 1000,
+        "episodes_per_round": 8,
+        "simulations": 8,
+        "replay_capacity": 4096,
+        "batch_size": 32,
+        "updates_per_round": 20,
+        "learning_rate": 0.0003,
+        "value_loss_weight": 1.0,
+        "seed": 20261110,
+        "environment_seed_start": 200000,
+        "environment_seed_count": 100000,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1,
+        "checkpoint_dir": "results/neural_mcts/overnight_01/checkpoints"
+      },
+      "search_config": {
+        "simulations": 8,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1
+      },
+      "stream_seeds": {
+        "network": 3267091078,
+        "environment": 1139213203,
+        "search": 30914284,
+        "exploration": 1347665913,
+        "replay": 3035594526,
+        "updates": 348495770
+      },
+      "path": "results/neural_mcts/overnight_01/checkpoints/round_0001.pt",
+      "sha256": "c97f89afb20068f41cdced994bb113a7f8ac8b25049a6de896b53f8a5a1d5c66",
+      "replay_outcomes": {
+        "1.0": 29
+      }
+    },
+    "Neural_round_0100": {
+      "rounds_completed": 100,
+      "updates": 1980,
+      "attempts": 800,
+      "level_sha256": "11b632482decad27320b9afc57a7f723637a39a49c5ae6aeb5e58fe169a6835b",
+      "level_config": {
+        "rows": 8,
+        "cols": 8,
+        "num_colors": 5,
+        "move_limit": 10,
+        "level_id": "az-overnight-v1",
+        "name": "Custom Level",
+        "seed": 0,
+        "cell_mask": null,
+        "blockers": [],
+        "initial_specials": [],
+        "objectives": [
+          {
+            "objective_type": "COLLECT_TILES",
+            "target": 30,
+            "color": null
+          }
+        ]
+      },
+      "config": {
+        "device": "cpu",
+        "collection_rounds": 1000,
+        "episodes_per_round": 8,
+        "simulations": 8,
+        "replay_capacity": 4096,
+        "batch_size": 32,
+        "updates_per_round": 20,
+        "learning_rate": 0.0003,
+        "value_loss_weight": 1.0,
+        "seed": 20261110,
+        "environment_seed_start": 200000,
+        "environment_seed_count": 100000,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1,
+        "checkpoint_dir": "results/neural_mcts/overnight_01/checkpoints"
+      },
+      "search_config": {
+        "simulations": 8,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1
+      },
+      "stream_seeds": {
+        "network": 3267091078,
+        "environment": 1139213203,
+        "search": 30914284,
+        "exploration": 1347665913,
+        "replay": 3035594526,
+        "updates": 348495770
+      },
+      "path": "results/neural_mcts/overnight_01/checkpoints/round_0100.pt",
+      "sha256": "e528a0d646aca352f594d24da7d291ae1714318963ce8e1c9417d4b26331d360",
+      "replay_outcomes": {
+        "1.0": 2694
+      }
+    },
+    "Neural_round_0200": {
+      "rounds_completed": 200,
+      "updates": 3980,
+      "attempts": 1600,
+      "level_sha256": "11b632482decad27320b9afc57a7f723637a39a49c5ae6aeb5e58fe169a6835b",
+      "level_config": {
+        "rows": 8,
+        "cols": 8,
+        "num_colors": 5,
+        "move_limit": 10,
+        "level_id": "az-overnight-v1",
+        "name": "Custom Level",
+        "seed": 0,
+        "cell_mask": null,
+        "blockers": [],
+        "initial_specials": [],
+        "objectives": [
+          {
+            "objective_type": "COLLECT_TILES",
+            "target": 30,
+            "color": null
+          }
+        ]
+      },
+      "config": {
+        "device": "cpu",
+        "collection_rounds": 1000,
+        "episodes_per_round": 8,
+        "simulations": 8,
+        "replay_capacity": 4096,
+        "batch_size": 32,
+        "updates_per_round": 20,
+        "learning_rate": 0.0003,
+        "value_loss_weight": 1.0,
+        "seed": 20261110,
+        "environment_seed_start": 200000,
+        "environment_seed_count": 100000,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1,
+        "checkpoint_dir": "results/neural_mcts/overnight_01/checkpoints"
+      },
+      "search_config": {
+        "simulations": 8,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1
+      },
+      "stream_seeds": {
+        "network": 3267091078,
+        "environment": 1139213203,
+        "search": 30914284,
+        "exploration": 1347665913,
+        "replay": 3035594526,
+        "updates": 348495770
+      },
+      "path": "results/neural_mcts/overnight_01/checkpoints/round_0200.pt",
+      "sha256": "c49da57b5a3256263ac003813ae8e443ba7c42fa328c01580d71acad1fbfcf30",
+      "replay_outcomes": {
+        "1.0": 4096
+      }
+    },
+    "Neural_round_0400": {
+      "rounds_completed": 400,
+      "updates": 7980,
+      "attempts": 3200,
+      "level_sha256": "11b632482decad27320b9afc57a7f723637a39a49c5ae6aeb5e58fe169a6835b",
+      "level_config": {
+        "rows": 8,
+        "cols": 8,
+        "num_colors": 5,
+        "move_limit": 10,
+        "level_id": "az-overnight-v1",
+        "name": "Custom Level",
+        "seed": 0,
+        "cell_mask": null,
+        "blockers": [],
+        "initial_specials": [],
+        "objectives": [
+          {
+            "objective_type": "COLLECT_TILES",
+            "target": 30,
+            "color": null
+          }
+        ]
+      },
+      "config": {
+        "device": "cpu",
+        "collection_rounds": 1000,
+        "episodes_per_round": 8,
+        "simulations": 8,
+        "replay_capacity": 4096,
+        "batch_size": 32,
+        "updates_per_round": 20,
+        "learning_rate": 0.0003,
+        "value_loss_weight": 1.0,
+        "seed": 20261110,
+        "environment_seed_start": 200000,
+        "environment_seed_count": 100000,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1,
+        "checkpoint_dir": "results/neural_mcts/overnight_01/checkpoints"
+      },
+      "search_config": {
+        "simulations": 8,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1
+      },
+      "stream_seeds": {
+        "network": 3267091078,
+        "environment": 1139213203,
+        "search": 30914284,
+        "exploration": 1347665913,
+        "replay": 3035594526,
+        "updates": 348495770
+      },
+      "path": "results/neural_mcts/overnight_01/checkpoints/round_0400.pt",
+      "sha256": "0977628bf7dd214df5b7b3159dfea7213e748bb8cf668da365d1cf8c5a45fd6e",
+      "replay_outcomes": {
+        "1.0": 4096
+      }
+    },
+    "Neural_round_0600": {
+      "rounds_completed": 600,
+      "updates": 11980,
+      "attempts": 4800,
+      "level_sha256": "11b632482decad27320b9afc57a7f723637a39a49c5ae6aeb5e58fe169a6835b",
+      "level_config": {
+        "rows": 8,
+        "cols": 8,
+        "num_colors": 5,
+        "move_limit": 10,
+        "level_id": "az-overnight-v1",
+        "name": "Custom Level",
+        "seed": 0,
+        "cell_mask": null,
+        "blockers": [],
+        "initial_specials": [],
+        "objectives": [
+          {
+            "objective_type": "COLLECT_TILES",
+            "target": 30,
+            "color": null
+          }
+        ]
+      },
+      "config": {
+        "device": "cpu",
+        "collection_rounds": 1000,
+        "episodes_per_round": 8,
+        "simulations": 8,
+        "replay_capacity": 4096,
+        "batch_size": 32,
+        "updates_per_round": 20,
+        "learning_rate": 0.0003,
+        "value_loss_weight": 1.0,
+        "seed": 20261110,
+        "environment_seed_start": 200000,
+        "environment_seed_count": 100000,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1,
+        "checkpoint_dir": "results/neural_mcts/overnight_01/checkpoints"
+      },
+      "search_config": {
+        "simulations": 8,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1
+      },
+      "stream_seeds": {
+        "network": 3267091078,
+        "environment": 1139213203,
+        "search": 30914284,
+        "exploration": 1347665913,
+        "replay": 3035594526,
+        "updates": 348495770
+      },
+      "path": "results/neural_mcts/overnight_01/checkpoints/round_0600.pt",
+      "sha256": "3ed3842a859a84ddb68441a7607aeda4b67ff44ccb4947dd2fad99ec5763360c",
+      "replay_outcomes": {
+        "1.0": 4096
+      }
+    },
+    "Neural_round_0669": {
+      "rounds_completed": 669,
+      "updates": 13360,
+      "attempts": 5352,
+      "level_sha256": "11b632482decad27320b9afc57a7f723637a39a49c5ae6aeb5e58fe169a6835b",
+      "level_config": {
+        "rows": 8,
+        "cols": 8,
+        "num_colors": 5,
+        "move_limit": 10,
+        "level_id": "az-overnight-v1",
+        "name": "Custom Level",
+        "seed": 0,
+        "cell_mask": null,
+        "blockers": [],
+        "initial_specials": [],
+        "objectives": [
+          {
+            "objective_type": "COLLECT_TILES",
+            "target": 30,
+            "color": null
+          }
+        ]
+      },
+      "config": {
+        "device": "cpu",
+        "collection_rounds": 1000,
+        "episodes_per_round": 8,
+        "simulations": 8,
+        "replay_capacity": 4096,
+        "batch_size": 32,
+        "updates_per_round": 20,
+        "learning_rate": 0.0003,
+        "value_loss_weight": 1.0,
+        "seed": 20261110,
+        "environment_seed_start": 200000,
+        "environment_seed_count": 100000,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1,
+        "checkpoint_dir": "results/neural_mcts/overnight_01/checkpoints"
+      },
+      "search_config": {
+        "simulations": 8,
+        "c_puct": 1.5,
+        "temperature": 1.0,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_epsilon": 0.1
+      },
+      "stream_seeds": {
+        "network": 3267091078,
+        "environment": 1139213203,
+        "search": 30914284,
+        "exploration": 1347665913,
+        "replay": 3035594526,
+        "updates": 348495770
+      },
+      "path": "results/neural_mcts/overnight_01/checkpoints/round_0669.pt",
+      "sha256": "c27b03a867a35c30ad18eb759c3f3e6967b2a7974783dde3de03cf66e06f9b1e",
+      "replay_outcomes": {
+        "1.0": 4096
+      }
+    }
+  },
+  "model_sha256": {
+    "Neural_round_0001": "172ca0b4c219fb68c7113e847a02e15e2f595879fc0a687e9f12e6e7e2e31c56",
+    "Neural_round_0100": "6bb85c551cc1d9f6c0cd471bde1c2ca36a06d9cb887ad3079a3a26b31d6bc6aa",
+    "Neural_round_0200": "ff24cb5c2d8e37b30c43f998ff22221b808ee2b1755b2c47c060f61f593fca34",
+    "Neural_round_0400": "d73470f3c23f20b343d4edaa9cfba850dbcfa1fcf908631e4b970dcb4dfa38d0",
+    "Neural_round_0600": "27509a10feba50fc93d166beab22f6b95d7af137c077b86e7f13d7e0168f852b",
+    "Neural_round_0669": "244e2fe2969817d30092fb9a7da29716cff0828f60fb64959259ff1154be7c95",
+    "Neural_untrained": "172ca0b4c219fb68c7113e847a02e15e2f595879fc0a687e9f12e6e7e2e31c56"
+  },
+  "package_source_sha256": "96f52ff0cc6588654dd067ba96aa297d7e736015e3d64bd3b209da6d8b7f501a",
+  "versions": {
+    "numpy": "2.4.6",
+    "torch": "2.15.0"
+  },
+  "seed_rule": "same environment seeds within profile; neural checkpoints and untrained share agent stream; Random/Greedy/classic have separate slots",
+  "denominators": {
+    "win_rate": "all attempted records; errors and time limits reported separately",
+    "moves": "available moves_used, including losses",
+    "decision_time": "total action selection seconds / selection calls; excludes model load/binding/integrity checks",
+    "score": "tiles cleared, a score proxy; environment has no separate points field",
+    "return": "sparse environment reward sum"
+  },
+  "planned_episodes": 500,
+  "records_written": 500,
+  "training_audit": {
+    "metrics_path": "results/neural_mcts/overnight_01/metrics.json",
+    "metrics_sha256": "f848bb9173a8574c6ff945b242c6fb146412b767abf8aa3f0ff819e7dd9f5710",
+    "rounds": 669,
+    "episodes": 5352,
+    "outcomes": {
+      "WON": 5352
+    },
+    "last_policy_loss": 0.031259144243085756,
+    "last_value_loss": 0.0,
+    "interpretation": "Blocker-free collect-any-color task; all observed training targets +1. Near-zero value MSE is consistent with a constant saturated critic, not evidence of discrimination or gameplay improvement."
+  },
+  "elapsed_seconds": 417.65565062500536
+}

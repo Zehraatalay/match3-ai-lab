@@ -1,0 +1,128 @@
+{
+  "confirmation_attempts": [
+    {
+      "ci_lower": 0.15001174503655804,
+      "ci_upper": 0.3107053471500031,
+      "episodes": 100,
+      "level_id": "generated-42-0",
+      "status": "REJECT",
+      "target": "MEDIUM",
+      "win_rate": 0.22
+    },
+    {
+      "ci_lower": 0.5120283616749817,
+      "ci_upper": 0.699832780680298,
+      "episodes": 100,
+      "level_id": "generated-42-1",
+      "status": "MATCH",
+      "target": "MEDIUM",
+      "win_rate": 0.61
+    }
+  ],
+  "found": true,
+  "generation_spec": {
+    "cols": 8,
+    "max_blockers": 12,
+    "max_moves": 10,
+    "min_blockers": 6,
+    "min_moves": 5,
+    "num_colors": 5,
+    "rows": 8,
+    "seed": 42
+  },
+  "schema_version": 1,
+  "screening": [
+    {
+      "candidate_id": 0,
+      "classification": {
+        "ci_lower": 0.23658959361548731,
+        "ci_upper": 0.7634104063845126,
+        "episodes": 10,
+        "level_id": "generated-42-0",
+        "status": "UNCERTAIN",
+        "target": "MEDIUM",
+        "win_rate": 0.5
+      },
+      "level_id": "generated-42-0",
+      "valid": true,
+      "validation_reason": null
+    },
+    {
+      "candidate_id": 1,
+      "classification": {
+        "ci_lower": 0.3126695474501864,
+        "ci_upper": 0.8318224187964902,
+        "episodes": 10,
+        "level_id": "generated-42-1",
+        "status": "UNCERTAIN",
+        "target": "MEDIUM",
+        "win_rate": 0.6
+      },
+      "level_id": "generated-42-1",
+      "valid": true,
+      "validation_reason": null
+    },
+    {
+      "candidate_id": 2,
+      "classification": {
+        "ci_lower": 0.49015684672072335,
+        "ci_upper": 0.9433190520193067,
+        "episodes": 10,
+        "level_id": "generated-42-2",
+        "status": "REJECT",
+        "target": "MEDIUM",
+        "win_rate": 0.8
+      },
+      "level_id": "generated-42-2",
+      "valid": true,
+      "validation_reason": null
+    },
+    {
+      "candidate_id": 3,
+      "classification": {
+        "ci_lower": 0.5958436145024278,
+        "ci_upper": 0.9821242504842788,
+        "episodes": 10,
+        "level_id": "generated-42-3",
+        "status": "REJECT",
+        "target": "MEDIUM",
+        "win_rate": 0.9
+      },
+      "level_id": "generated-42-3",
+      "valid": true,
+      "validation_reason": null
+    },
+    {
+      "candidate_id": 4,
+      "classification": {
+        "ci_lower": 0.23658959361548731,
+        "ci_upper": 0.7634104063845126,
+        "episodes": 10,
+        "level_id": "generated-42-4",
+        "status": "UNCERTAIN",
+        "target": "MEDIUM",
+        "win_rate": 0.5
+      },
+      "level_id": "generated-42-4",
+      "valid": true,
+      "validation_reason": null
+    }
+  ],
+  "selected_level_id": "generated-42-1",
+  "statistics": {
+    "attempted_candidates": 5,
+    "confirmation_attempts": 2,
+    "invalid_candidates": 0,
+    "valid_candidates": 5
+  },
+  "target": "MEDIUM",
+  "target_generation_config": {
+    "confirmation_episodes": 100,
+    "confirmation_seed": 100000,
+    "max_candidates": 5,
+    "mcts_simulations": 10,
+    "screening_episodes": 10,
+    "screening_seed": 1000,
+    "target": "MEDIUM"
+  }
+}
