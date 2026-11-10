@@ -19,7 +19,7 @@ LEGACY_CLI_SHA256 = "7fe16a3bdb4f1eba60d518bcae6d0a8537cfa3c1bf5c0f58d7813574a59
 VERIFIED_SOURCE_SHA256 = {
     "src/match3_ai/agents/base.py": "02d726a09e10fb99f9bb5f485a689dd1ae7314f42792602e4d1a4e98e0b3c247",
     "src/match3_ai/agents/greedy_agent.py": "457cc61849d9fb970e40e4943ad934fca96d59969c930f71cfc08428cb16a4c0",
-    "src/match3_ai/agents/mcts_simulator.py": "15140b62988ce458f5fa3c78f6eec95332c6f21f372a590b42eec98b5981a6d9",
+    "src/match3_ai/agents/mcts_simulator.py": "3be1602c57ceca8040c28ba70653405517dc25ab615903de328ffd1e98262734",
     "src/match3_ai/agents/mcts_value.py": "11ca252d26f4d285eb7610fcc875e553401d6a40deacc2420ba311432f91ceda",
     "src/match3_ai/agents/objective_rollout.py": "25d9edbfb43a4fd848d89324d8ddb5e7a777fa2ad186e9a9ef9b2ec76df4292e",
     "src/match3_ai/agents/observation_encoder.py": "adb520ea6844a5578f09a3264c8e1ba50cdd58c74019b068079e71e51e6f94be",

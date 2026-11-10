@@ -27,6 +27,7 @@ def test_simulation_does_not_modify_original_environment():
     env.close()
     clone.close()
 
+
 import copy
 
 
