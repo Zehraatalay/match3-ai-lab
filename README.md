@@ -1,279 +1,185 @@
-Match3-AI-Lab
+# Match3-AI-Lab
 
-Building intelligent agents for Match-3 games
+**AI agents, automated playtesting, and difficulty analysis for Match-3 games.**
 
-Match3-AI-Lab is a Python-based environment for building, training, and evaluating AI agents in Match-3 games.
+Match3-AI-Lab is a Python project combining **reinforcement learning**, **Monte Carlo Tree Search**, **procedural level generation**, and **gameplay analytics** in a playable Match-3 environment.
 
-The project combines reinforcement learning, Monte Carlo Tree Search, procedural level generation, and gameplay analytics to explore how AI can support automated playtesting, difficulty evaluation, and game balancing.
-
-Beyond agent development, it includes a fully playable Match-3 game, configurable levels, reproducible evaluation pipelines, and data-driven gameplay analysis.
-
-⸻
-
-🎮 Gameplay Showcase
-
-The game features different level configurations, objectives, blockers, and special tile mechanics.
+## Gameplay
 
 <table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="docs/images/level4.png" alt="Frozen Garden gameplay" width="100%"/>
-      <br/>
-      <b>Frozen Garden</b>
-    </td>
-    <td align="center" width="50%">
-      <img src="docs/images/level6.png" alt="Blocker Mayhem gameplay" width="100%"/>
-      <br/>
-      <b>Blocker Mayhem</b>
-    </td>
-  </tr>
+<tr>
+<td align="center" width="50%"><img src="docs/images/level4.png" alt="Frozen Garden" width="100%"><br><strong>Frozen Garden</strong></td>
+<td align="center" width="50%"><img src="docs/images/level6.png" alt="Blocker Mayhem" width="100%"><br><strong>Blocker Mayhem</strong></td>
+</tr>
 </table>
 
-Players can interact with the game through a Pygame interface, while AI agents use the same underlying game environment for automated gameplay and evaluation.
+The game supports special tiles, blockers, cascades, multiple objectives, and human play through a Pygame interface.
 
-⸻
+## Features
 
-✨ Key Features
+| Component | Capabilities |
+| :--- | :--- |
+| **Game Engine** | Match-3 mechanics, special tiles, blockers, and objectives |
+| **AI & Search** | Random, Greedy, DQN/DDQN, PPO, Classic MCTS, Neural MCTS |
+| **Level Generation** | Seeded generation, validation, and difficulty calibration |
+| **Evaluation** | Paired benchmarks, win rates, and confidence intervals |
+| **Analytics** | Statistical testing, win prediction, and spatial features |
+| **Interface** | Playable Pygame UI |
 
-Component	Capabilities
-Match-3 Engine	Match detection, cascades, gravity, refill, special tiles, blockers, and objectives
-AI Agents	Random, Greedy, DQN/DDQN, PPO, Classic MCTS, and Neural MCTS
-Reinforcement Learning	Gymnasium-compatible environment, legal-action masking, training and evaluation
-Procedural Generation	Configurable level generation, validation, and difficulty calibration
-Automated Playtesting	Paired evaluations, win-rate comparisons, and confidence intervals
-Gameplay Analytics	Statistical testing, win prediction, and spatial feature engineering
-Interactive UI	Human-playable game with Pygame
+## AI Agents
 
-The game engine, agents, training pipelines, and visualization are implemented as separate components to support testing and experimentation.
+| Agent | Approach |
+| :--- | :--- |
+| **Random / Greedy** | Baseline legal-action policies |
+| **DQN / DDQN** | Value-based reinforcement learning |
+| **PPO** | Masked actor-critic reinforcement learning |
+| **Classic MCTS** | Stochastic open-loop UCT search |
+| **Neural MCTS** | PUCT search with a CNN policy-value network |
 
-⸻
+Implementation details: [AI Algorithms](docs/algorithms.md).
 
-🤖 AI Agents
+## Benchmark Results
 
-The project implements multiple approaches to solving Match-3 levels, ranging from simple heuristics to neural-guided search.
+### Reinforcement Learning
 
-Agent	Method	Description
-Random	Baseline	Selects a random legal action
-Greedy	Heuristic	Prioritizes immediate match-based rewards
-DQN / DDQN	Value-based RL	Learns action values through deep Q-learning
-PPO	Policy-gradient RL	Learns a masked stochastic policy using actor-critic optimization
-Classic MCTS	Tree Search	Uses stochastic open-loop UCT search and simulated rollouts
-Neural MCTS	Neural-Guided Search	Combines PUCT search with a CNN policy-value network
+**Protocol:** 100 evaluation episodes per agent per level, using paired boards.
 
-All agents interact with the same game rules and legal-action interface.
+| Level | Random | Greedy | DDQN | PPO |
+| :--- | ---: | ---: | ---: | ---: |
+| Double Trouble | 62% | 64% | **77%** | 58% |
+| Wooden Trouble | 43% | 32% | **63%** | 51% |
+| Frozen Garden | 48% | 54% | **76%** | 66% |
+| **Macro average** | **51.0%** | **50.0%** | **72.0%** | **58.3%** |
 
-Technical details: AI Algorithms
+**Finding:** DDQN had the highest observed win rate on all three evaluated levels.
 
-⸻
+### Classic Monte Carlo Tree Search
 
-📊 Benchmark Results
+**Protocol:** 100 paired boards per level, 30 simulations per decision.
 
-The project evaluates agents using controlled game configurations, explicit random seeds, and gameplay metrics.
+| Level | Random | Greedy | MCTS (RT) | MCTS (GO) |
+| :--- | ---: | ---: | ---: | ---: |
+| Double Trouble V2 | 52% | 55% | 91% | **93%** |
+| Wooden Trouble V2 | 41% | 37% | **95%** | 93% |
+| Frozen Garden V2 | 52% | 64% | 94% | **95%** |
 
-1. Reinforcement Learning
+*RT = random rollout + terminal value; GO = greedy rollout + outcome value.*
 
-Random, Greedy, DDQN, and PPO were evaluated across three levels, using 100 episodes per agent per level.
+**Finding:** Classic MCTS outperformed both baselines in these development benchmarks.
 
-Level	Random	Greedy	DDQN	PPO
-Double Trouble	62%	64%	77%	58%
-Wooden Trouble	43%	32%	63%	51%
-Frozen Garden	48%	54%	76%	66%
-Macro Average	51.0%	50.0%	72.0%	58.3%
+[Baseline results](docs/benchmarks/mcts_baselines_main_100/summary.csv) · [MCTS ablation](docs/benchmarks/mcts_ablation_100/summary.csv)
 
-Key finding: DDQN achieved the highest observed win rate on all three evaluated levels.
+### Neural Monte Carlo Tree Search
 
-These results reflect the specific training and evaluation configurations rather than general performance guarantees.
+**Protocol:** 20 paired boards per configuration, 8 simulations per decision.
 
-2. Classic Monte Carlo Tree Search
+| Agent | Medium | Hard |
+| :--- | ---: | ---: |
+| Random | 0% | 0% |
+| Greedy | 30% | 0% |
+| **Classic MCTS** | **70%** | **30%** |
+| Neural MCTS (untrained) | 10% | 0% |
+| Neural MCTS (trained) | 30% | 0% |
 
-Classic MCTS uses stochastic simulations to evaluate possible moves.
+**Finding:** Training improved the observed Medium result relative to initialization, but Neural MCTS did not surpass Classic MCTS. Training on overly easy levels limited useful outcome learning.
 
-The main comparison used 100 paired boards per level and 30 simulations per decision.
+[Neural MCTS findings](docs/benchmarks/az4/evaluation_findings.md)
 
-Level	Random	Greedy	MCTS (RT)	MCTS (GO)
-Double Trouble V2	52%	55%	91%	93%
-Wooden Trouble V2	41%	37%	95%	93%
-Frozen Garden V2	52%	64%	94%	95%
+> **Evaluation note:** These studies use different levels and evaluation protocols; their win rates are not a single cross-study ranking.
 
-RT: Random rollout + terminal value. GO: Greedy rollout + outcome value.
+## Procedural Level Generation
 
-Key finding: Classic MCTS substantially outperformed Random and Greedy in these development benchmarks.
+The pipeline generates level candidates, validates their constraints, and calibrates difficulty through seeded AI playtesting.
 
-The evaluation also includes a four-configuration ablation study examining rollout policies and value functions.
+| Difficulty | Target Classic MCTS win rate |
+| :--- | ---: |
+| Easy | 75–100% |
+| Medium | 40–75% |
+| Hard | 10–40% |
+| Very Hard | 0–10% |
 
-Classic MCTS benchmark data · Ablation results
+Difficulty reflects **agent performance**, not measured human difficulty. See [Level Generation](docs/level_generation.md).
 
-3. Neural Monte Carlo Tree Search
+## Gameplay Analytics
 
-An AlphaZero-inspired agent combines PUCT search with a CNN policy-value network.
+**2,400 gameplay episodes** support paired statistical comparisons, win prediction, and spatial feature analysis.
 
-The evaluation used 20 paired boards per configuration and 8 simulations per decision.
+| Model | Accuracy | ROC-AUC | PR-AUC |
+| :--- | ---: | ---: | ---: |
+| Historical baseline | **0.608** | 0.625 | 0.582 |
+| Logistic Regression | 0.604 | **0.647** | **0.623** |
+| Random Forest | 0.558 | 0.606 | 0.605 |
 
-Agent	Medium	Hard
-Random	0%	0%
-Greedy	30%	0%
-Classic MCTS	70%	30%
-Neural MCTS (Untrained)	10%	0%
-Neural MCTS (Trained)	30%	0%
+**Finding:** Logistic Regression achieved the best ROC-AUC and PR-AUC in this comparison. Spatial features modestly improved ranking metrics but not probability calibration.
 
-Key finding: The trained Neural MCTS improved over its untrained initialization on Medium, but did not outperform Classic MCTS.
+<p align="center"><img src="analysis/figures/win_rate_comparison.png" alt="Win rates by level and agent" width="80%"></p>
 
-The experiments revealed limitations in training diversity and outcome prediction, highlighting the importance of representative training environments.
+<p align="center"><img src="analysis/figures/stage2_board_difficulty_distribution.png" alt="Board difficulty distribution" width="80%"></p>
 
-Neural MCTS evaluation findings
+[Full Results & Analysis](docs/RESULTS.md)
 
-Evaluation note: Reinforcement Learning, Classic MCTS, and Neural MCTS results come from separate experimental protocols. Their win rates should not be interpreted as a single cross-study ranking.
+## Getting Started
 
-For detailed methodology, results, and limitations, see Results & Analysis.
+**Requirements:** Python 3.11 and pip.
 
-⸻
+### Install
 
-🧩 Procedural Level Generation
-
-Match3-AI-Lab includes a procedural generation pipeline for creating and evaluating Match-3 levels.
-
-The pipeline supports:
-
-1. Level Generation: Generate candidate boards and configurations using controlled random seeds.
-2. Validation: Check structural constraints and gameplay compatibility.
-3. Difficulty Screening: Evaluate candidate levels using AI-based playtesting.
-4. Difficulty Calibration: Estimate win rates and confidence intervals.
-5. Level Selection: Retain configurations that satisfy the defined difficulty criteria.
-
-Difficulty Categories
-
-Difficulty is estimated using Classic MCTS performance under a fixed evaluation protocol.
-
-Difficulty	Target Win Rate
-Easy	75–100%
-Medium	40–75%
-Hard	10–40%
-Very Hard	0–10%
-
-These categories represent agent-estimated difficulty, not direct measurements of human player experience.
-
-Learn more: Procedural Level Generation
-
-⸻
-
-📈 Gameplay Analytics
-
-The project also explores how gameplay data can support difficulty analysis and predictive modeling.
-
-Gameplay Dataset
-
-A dataset of 2,400 gameplay episodes was generated using Random and Greedy agents.
-
-The analysis includes:
-
-* Gameplay performance and win-rate comparisons
-* Paired statistical testing using McNemar’s test
-* Multiple-comparison correction
-* Win prediction with Logistic Regression and Random Forest
-* Spatial board feature engineering
-* Grouped cross-validation
-
-Win Prediction
-
-Model	Accuracy	ROC-AUC	PR-AUC
-Historical Baseline	0.608	0.625	0.582
-Logistic Regression	0.604	0.647	0.623
-Random Forest	0.558	0.606	0.605
-
-Logistic Regression achieved the highest ROC-AUC and PR-AUC in this experiment.
-
-Gameplay Visualizations
-
-<p align="center">
-  <img src="analysis/figures/win_rate_comparison.png" alt="Agent win-rate comparison" width="80%"/>
-</p>
-<p align="center">
-  <img src="analysis/figures/stage2_board_difficulty_distribution.png" alt="Board difficulty distribution" width="80%"/>
-</p>
-
-Spatial features provided modest improvements in win-prediction ranking metrics, although probability calibration did not improve.
-
-Full analysis: Results & Analysis
-
-⸻
-
-🚀 Getting Started
-
-Requirements
-
-* Python 3.11
-* pip
-* Git
-
-Installation
-
-git clone <https://github.com/Zehraatalay/match3-ai-lab>
-cd match3-ai-lab
+```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[rl,ui,analysis,dev]"
+```
 
-Play the Game
+### Run
 
-Launch the Pygame interface:
-
+```bash
+# Play the game
 python -m match3_ai.ui.pygame_view --levels
 
-Run Tests
-
+# Validate the project
 python -m pytest -q
 ruff check .
 ruff format --check .
+```
 
-Explore Training and Benchmarks
+### Explore Experiments
 
-# Reinforcement learning
+```bash
 python -m match3_ai.training.dqn --help
 python -m match3_ai.training.ppo --help
-# Search-based agents
 python scripts/benchmark_mcts_baselines.py --help
 python scripts/benchmark_neural_mcts.py --help
-# Procedural generation
 python scripts/benchmark_targeted_generation.py --help
+```
 
-See Reproducibility for evaluation protocols and checkpoint requirements.
+## Project Structure
 
-⸻
-
-📁 Project Structure
-
+```text
 match3-ai-lab/
 ├── src/match3_ai/
-│   ├── agents/          # AI agents and search algorithms
-│   ├── games/match3/    # Game engine and environments
-│   ├── training/        # RL and neural training pipelines
-│   ├── levels/          # Level configuration and generation
-│   ├── evaluation/      # Agent evaluation and benchmarks
-│   └── ui/              # Pygame interface
-│
-├── analysis/            # Gameplay data science
-├── experiments/         # Evaluation configurations and fixtures
-├── scripts/             # Benchmark and experiment utilities
-├── tests/               # Automated tests
-└── docs/                # Documentation and published evidence
+│   ├── agents/         # AI agents
+│   ├── games/match3/   # Game engine
+│   ├── training/       # Training pipelines
+│   ├── levels/         # Level generation
+│   ├── evaluation/     # Benchmarks
+│   └── ui/             # Pygame interface
+├── analysis/           # Gameplay analytics
+├── experiments/        # Experiment fixtures
+├── scripts/            # Evaluation tools
+├── tests/              # Automated tests
+└── docs/               # Documentation and evidence
+```
 
-⸻
+## Documentation
 
-📚 Documentation
+| Document | Description |
+| :--- | :--- |
+| [AI Algorithms](docs/algorithms.md) | Agent and search methods |
+| [Level Generation](docs/level_generation.md) | Generation and calibration |
+| [Results & Analysis](docs/RESULTS.md) | Methods, results, limitations |
+| [Reproducibility](docs/reproducibility.md) | Setup and evaluation commands |
+| [Benchmark Evidence](docs/benchmarks/README.md) | Published CSV/JSON records |
 
-Document	Contents
-AI Algorithms	Agent implementations and algorithmic approaches
-Level Generation	Procedural generation and difficulty calibration
-Results & Analysis	Evaluation methods, benchmark results, and limitations
-Reproducibility	Installation, experiments, and checkpoint requirements
-Benchmark Evidence	Published CSV/JSON evaluation records
+## Tech Stack
 
-⸻
-
-Tech Stack
-
-Python · PyTorch · Gymnasium · NumPy · pandas · scikit-learn · SciPy · Pygame · pytest
-
-⸻
-
-Match3-AI-Lab explores how reinforcement learning, search algorithms, and gameplay analytics can contribute to automated game testing and difficulty evaluation.
+**Python · PyTorch · Gymnasium · NumPy · pandas · scikit-learn · SciPy · Pygame · pytest**
