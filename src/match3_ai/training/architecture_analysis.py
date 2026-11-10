@@ -295,7 +295,7 @@ def write_report(result, destination):
     lines = [
         "# Sprint 5.12: controlled MLP/CNN pilot",
         "",
-        "Hypothesis: a spatial inductive bias may improve learning; it does not guarantee better performance. Both networks receive exactly the same 1467 encoded values and a separate action mask. See docs/sprint5_12_cnn_dqn.md for the channel map, checkpoint design and reproduction protocol.",
+        "Hypothesis: a spatial inductive bias may improve learning; it does not guarantee better performance. Both networks receive exactly the same 1467 encoded values and a separate action mask. See docs/algorithms.md for model approaches and docs/reproducibility.md for experiment guidance.",
         "",
         "CNN: Conv3x3 20→8→16, stride 1/padding 1, ReLU; flatten 1152. Global branch 27→32/ReLU. Concatenate 1184→256→128→144. No pooling, dropout or batch normalization. MLP: 1467→256→128→144. The CNN has fewer parameters but extra convolution arithmetic; this is not a capacity-matched experiment.",
         "",

@@ -730,9 +730,6 @@ def finalize(root):
     with (root / "final_summary.json").open("x") as f:
         json.dump(result, f, indent=2, allow_nan=False)
     report = report_text(root, protocol, result)
-    destination = Path("docs/sprint5_19_rl_optimization.md")
-    with destination.open("x") as f:
-        f.write(report)
     with (root / "final_report.md").open("x") as f:
         f.write(report)
     return result

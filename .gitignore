@@ -58,3 +58,13 @@ analysis/figures/*
 !analysis/figures/win_rate_comparison.png
 !analysis/figures/stage2_board_difficulty_distribution.png
 !analysis/figures/stage2_spatial_validation_correlations.png
+
+# Local development documentation
+/docs/sprint5_*.md
+/docs/overnight_rl_research.md
+/docs/release_commit_plan.md
+/docs/release_validation.md
+/docs/stochastic_mcts.md
+/docs/level_versions.md
+
+/docs/mcts_sprint4_validation.json

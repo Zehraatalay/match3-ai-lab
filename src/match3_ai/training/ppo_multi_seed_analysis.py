@@ -332,7 +332,7 @@ def write_report(result, runs, destination):
     lines = [
         "# Sprint 5.15: three-seed masked PPO",
         "",
-        "Implementation/preflight audit, hyperparameters and metric definitions: docs/sprint5_15_multi_seed_ppo.md. Three independent master seeds, unchanged sparse PPO, no gameplay or DQN training changes. Validation boards 300000–300099 are shared; final-test seeds were not used.",
+        "Evaluation methods and limitations: docs/RESULTS.md. Three independent master seeds, unchanged sparse PPO, no gameplay or DQN training changes. Validation boards 300000–300099 are shared; final-test seeds were not used.",
         "",
         "| Seed | Initial wins | Final wins [Wilson 95% CI] | Best wins / step | Final minus initial (pp) | Completion | HP | Moves | Reward |",
         "|---:|---:|---|---|---:|---:|---:|---:|---:|",

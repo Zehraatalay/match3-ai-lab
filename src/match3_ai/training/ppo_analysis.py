@@ -408,7 +408,7 @@ def write_report(result, rollouts, path):
     lines = [
         f"# PPO learning diagnostics: master seed {s['training_config']['seed']}",
         "",
-        f"Implementation audit and metric definitions: docs/sprint5_14_ppo_diagnostics.md. Sparse rewards, unchanged architecture and optimizer settings; one master seed {s['training_config']['seed']}, {s['environment_steps']} training transitions. No DQN retraining or final-test seeds.",
+        f"Evaluation methods and limitations: docs/RESULTS.md. Sparse rewards, unchanged architecture and optimizer settings; one master seed {s['training_config']['seed']}, {s['environment_steps']} training transitions. No DQN retraining or final-test seeds.",
         "",
         "| Step | Wins / losses / errors | Win rate [Wilson 95% CI] | Completion | Remaining HP | Moves | Reward |",
         "|---:|---|---|---:|---:|---:|---:|",

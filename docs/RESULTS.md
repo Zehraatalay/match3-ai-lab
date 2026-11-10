@@ -1,135 +1,146 @@
-# Results & Analysis
+Results & Analysis
 
-This report summarizes the main experiments from Match-3 AI Lab: reinforcement learning agent evaluation and gameplay data analysis.
+This document summarizes the experimental methods, evaluation results, and key findings from Match3-AI-Lab.
 
-The two analyses use different datasets and evaluation protocols.
+The experiments cover reinforcement learning, Monte Carlo Tree Search, neural-guided search, and gameplay data analysis. Each study uses its own evaluation protocol; results should not be combined into a single ranking.
 
-## 1. Reinforcement Learning
+1. Reinforcement Learning
 
-### Experimental Setup
+Method
 
-I compared four agents: Random, Greedy, Double DQN (DDQN), and Proximal Policy Optimization (PPO).
+Random, Greedy, Double DQN (DDQN), and Proximal Policy Optimization (PPO) were evaluated on three level configurations:
 
-The evaluation covered three level configurations:
-- Double Trouble
-- Wooden Trouble
-- Frozen Garden
+* Double Trouble
+* Wooden Trouble
+* Frozen Garden
 
-Each agent played 100 episodes per level. Evaluation boards were paired across agents to make comparisons more consistent.
+Each agent completed 100 episodes per level, using paired evaluation boards. Trained checkpoints were selected during validation, independently of the reported evaluation results.
 
-The reported DDQN and PPO results use checkpoints selected during validation. Evaluation results were not used to select those checkpoints.
+Results
 
-### Win Rates
+Level	Random	Greedy	DDQN	PPO
+Double Trouble	62%	64%	77%	58%
+Wooden Trouble	43%	32%	63%	51%
+Frozen Garden	48%	54%	76%	66%
+Macro Average	51.0%	50.0%	72.0%	58.3%
 
-| Level | Random | Greedy | DDQN | PPO |
-|---|---:|---:|---:|---:|
-| Double Trouble | 62% | 64% | **77%** | 58% |
-| Wooden Trouble | 43% | 32% | **63%** | 51% |
-| Frozen Garden | 48% | 54% | **76%** | 66% |
-| **Macro average** | **51.0%** | **50.0%** | **72.0%** | **58.3%** |
+Findings: DDQN achieved the highest observed win rate on all three levels. PPO outperformed both baselines on Wooden Trouble and Frozen Garden, but not on Double Trouble.
 
-DDQN had the highest observed win rate on all three levels.
+These results are based on limited training budgets and do not establish general superiority across different game configurations.
 
-The largest observed difference between DDQN and Greedy was on Wooden Trouble: 63% versus 32%.
+2. Classic Monte Carlo Tree Search
 
-PPO performed better than both baseline agents on Wooden Trouble and Frozen Garden, but not on Double Trouble.
+Method
 
-### Limitations
+Classic MCTS uses stochastic open-loop UCT search. Each simulation clones the game environment, samples stochastic outcomes, and evaluates actions through rollouts.
 
-- Each agent was evaluated on 100 episodes per level.
-- Trained policies were selected using validation performance.
-- Training experiments used limited random seeds and computational budgets.
-- The final differences between agents were not formally tested for statistical significance.
-- Results may change with different levels, training budgets, or random seeds.
+Four configurations were compared:
 
-These results suggest that DDQN learned useful strategies for the evaluated configurations, but they do not establish general superiority across Match-3 games.
+Configuration	Rollout Policy	Value Function
+RT	Random	Terminal
+RO	Random	Outcome
+GT	Greedy	Terminal
+GO	Greedy	Outcome
 
----
+The evaluation used 100 paired boards per level and 30 simulations per decision.
 
-## 2. Gameplay Data Analysis
+Results
 
-I analyzed gameplay data separately from the reinforcement learning evaluation.
+Level	RT	RO	GT	GO
+Double Trouble V2	91%	93%	91%	93%
+Wooden Trouble V2	95%	92%	94%	93%
 
-The goal was to understand which board characteristics and gameplay metrics were associated with winning and whether they could help predict episode outcomes.
+The results above are the verified values available from the supplied MCTS report excerpt. The full comparison, including Frozen Garden V2, is available in the published benchmark summary.
 
-### Dataset
+Findings: All four MCTS configurations achieved high win rates on the displayed levels. Small differences between configurations should not be interpreted as conclusive evidence that one rollout or value function is superior.
 
-The analysis used 2,400 gameplay episodes from Random and Greedy agents.
+The earlier baseline comparison also reported Classic MCTS win rates of 91–95% across the three V2 levels, depending on configuration.
 
-The paired statistical comparison used 200 matched boards per level.
+3. Neural Monte Carlo Tree Search
 
-The dataset covers three level configurations and includes episode outcomes, gameplay metrics, and engineered features.
+Method
 
-### Paired Statistical Comparison
+Neural MCTS combines PUCT search with a CNN policy-value network.
 
-I compared Greedy and Random using an exact two-sided McNemar test, with Holm correction for multiple comparisons.
+The model learns from search-visit distributions and terminal win/loss outcomes. Unlike two-player AlphaZero, the implementation uses a single-player stochastic environment and does not alternate value signs during backup.
 
-| Level | Greedy − Random | 95% Bootstrap CI | Adjusted p-value |
-|---|---:|---:|---:|
-| Wooden Trouble v2 | −7.5 pp | [−16.5, +1.5] | 0.2568 |
-| Double Trouble v2 | −0.5 pp | [−9.5, +8.5] | 1.0000 |
-| Frozen Garden v2 | +9.0 pp | [−0.5, +18.5] | 0.2466 |
+The evaluation used 20 paired boards for each Medium and compatible Hard configuration, with eight simulations per decision.
 
-None of the differences were statistically significant after correction.
+Results
 
-This does not establish that the agents perform equally. It means the observed differences were not sufficient to demonstrate a statistically significant difference with this sample.
+Agent	Medium	Hard
+Random	0%	0%
+Greedy	30%	0%
+Classic MCTS	70%	30%
+Untrained Neural MCTS	10%	0%
+Trained Neural MCTS	30%	0%
 
-These comparisons use development data rather than an independent final test set.
+Findings: Training improved the observed Medium win rate relative to initialization, but the trained Neural MCTS did not outperform Classic MCTS.
 
-### Win Prediction
+The training environment was too easy to provide informative outcome targets: all 5,352 training episodes ended in wins. The final value network predicted +1 on all 50 inspected evaluation boards.
 
-I compared a historical baseline with Logistic Regression and Random Forest.
+Consequently, low training loss did not indicate reliable outcome prediction or strong generalization.
 
-| Model | Accuracy | ROC-AUC | PR-AUC |
-|---|---:|---:|---:|
-| Historical Baseline | 0.608 | 0.625 | 0.582 |
-| Logistic Regression | 0.604 | **0.647** | **0.623** |
-| Random Forest | 0.558 | 0.606 | 0.605 |
+The Hard evaluation used a five-color compatible configuration because the accepted six-color Hard level exceeded the neural encoder’s supported color range.
+
+These are development-set results with small samples, not independent final-test performance estimates.
+
+Detailed evidence is available in the Neural MCTS evaluation.
+
+4. Gameplay Data Analysis
+
+Dataset and Statistical Testing
+
+The analysis used 2,400 gameplay episodes generated by Random and Greedy agents across three level configurations.
+
+Paired comparisons used 200 matched boards per level. Differences were evaluated using exact two-sided McNemar tests with Holm correction.
+
+Level	Greedy − Random	Adjusted p-value
+Wooden Trouble V2	−7.5 pp	0.2568
+Double Trouble V2	−0.5 pp	1.0000
+Frozen Garden V2	+9.0 pp	0.2466
+
+None of the observed differences were statistically significant after correction.
+
+Win Prediction
+
+Gameplay features were used to predict episode outcomes.
+
+Model	Accuracy	ROC-AUC	PR-AUC
+Historical Baseline	0.608	0.625	0.582
+Logistic Regression	0.604	0.647	0.623
+Random Forest	0.558	0.606	0.605
 
 Logistic Regression achieved the highest ROC-AUC and PR-AUC in this comparison.
 
-The modest scores also suggest that predicting wins from the available features is not straightforward.
+Spatial Feature Engineering
 
-### Spatial Feature Engineering
+Grouped cross-validation was used to evaluate whether spatial board features improved win prediction.
 
-I explored whether spatial information about the board could improve win prediction.
+Features	Mean ROC-AUC	Mean PR-AUC
+Level + Agent	0.577	0.525
+Level + Agent + Board	0.584	0.539
+Level + Agent + Spatial	0.591	0.556
+Level + Agent + Board + Spatial	0.583	0.557
 
-The experiments used grouped cross-validation to compare different feature sets.
+Spatial features improved mean ROC-AUC by approximately 0.013 compared with the Level + Agent baseline.
 
-| Features | Mean ROC-AUC | Mean PR-AUC |
-|---|---:|---:|
-| Level + Agent | 0.577 | 0.525 |
-| Level + Agent + Board | 0.584 | 0.539 |
-| Level + Agent + Spatial | **0.591** | 0.556 |
-| Level + Agent + Board + Spatial | 0.583 | **0.557** |
+However, probability calibration metrics did not improve.
 
-Adding spatial features to Level + Agent improved mean ROC-AUC by approximately 0.013.
+Visualizations
 
-However, Brier score and log loss were slightly worse. Better ranking performance did not necessarily translate into better probability estimates.
+Agent win rates
 
-### Visualizations
+Board difficulty
 
-**Agent win-rate comparison**
+Spatial feature correlations
 
-![Agent win-rate comparison](../analysis/figures/win_rate_comparison.png)
+5. Key Findings
 
-**Board difficulty distribution**
+1. DDQN achieved the highest observed win rates in the reinforcement learning comparison.
+2. Classic MCTS performed strongly on the evaluated calibrated levels, although search requires additional computation.
+3. Neural MCTS training did not generalize reliably from the easy training configuration.
+4. Greedy was not consistently better than Random, and the paired differences were not statistically significant.
+5. Spatial features modestly improved win-prediction ranking performance without improving probability calibration.
 
-![Board difficulty distribution](../analysis/figures/stage2_board_difficulty_distribution.png)
-
-**Spatial feature correlations**
-
-![Spatial feature correlations](../analysis/figures/stage2_spatial_validation_correlations.png)
-
----
-
-## 3. Key Takeaways
-
-1. DDQN achieved the highest observed win rates on the three evaluated levels.
-2. Greedy was not consistently better than Random.
-3. Logistic Regression outperformed Random Forest on ROC-AUC and PR-AUC in the evaluated dataset.
-4. Spatial features modestly improved ranking performance but did not improve probability calibration.
-
-The project provides a playable environment for experimenting with game mechanics, AI agents, and gameplay analytics.
-
-Future improvements could focus on generalization across levels, broader evaluation, and more reliable training.
+The results demonstrate the use of Match3-AI-Lab for AI experimentation, automated playtesting, level evaluation, and gameplay analytics. Generalization remains dependent on training diversity, evaluation design, and computational budget.
