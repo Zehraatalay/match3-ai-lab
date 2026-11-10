@@ -286,18 +286,18 @@ class Match3LevelEnv(gym.Env):
         self.max_cascades = max_cascades
         self.max_initialization_attempts = max_initialization_attempts
         self._configs = self._load_packaged_levels()
-        if level_id not in self._configs:
-            raise ValueError(f"unknown level_id: {level_id}")
         if level_config is not None:
             if not isinstance(level_config, LevelConfig):
                 raise TypeError("level_config must be a LevelConfig")
+
             level_config.__post_init__()
+
             if level_config.level_id != level_id:
-                raise ValueError(
-                    "level_config must retain the selected packaged level ID"
-                )
+                raise ValueError("level_config must retain the selected level ID")
+
             if level_config.rows > self.MAX_ROWS or level_config.cols > self.MAX_COLS:
                 raise ValueError("level_config exceeds padded board shape")
+
             if (
                 not level_config.objectives
                 or len(level_config.objectives) > self.MAX_OBJECTIVES
@@ -307,7 +307,12 @@ class Match3LevelEnv(gym.Env):
                 )
             ):
                 raise ValueError("level_config exceeds observation objective capacity")
+
             self._configs[level_id] = level_config
+
+        elif level_id not in self._configs:
+            raise ValueError(f"unknown level_id: {level_id}")
+
         self.level_id = level_id
         self.config = self._configs[level_id]
         self.session: LevelSession | None = None

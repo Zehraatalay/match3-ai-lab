@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from match3_ai.agents.observation_encoder import RAW_FIELDS, ObservationEncoder
+from match3_ai.agents.observation_encoder import RAW_FIELDS
 from match3_ai.games.match3.environment import Match3LevelEnv
 from match3_ai.games.match3.rules import all_find_matches
 from match3_ai.training.seed_policy import validate_partition
@@ -17,8 +17,36 @@ FIELDS = {**RAW_FIELDS, "action_mask": (np.bool_, (144,))}
 
 
 def packed_observation(observation):
-    values = ObservationEncoder().pack(observation)
-    values["action_mask"] = np.asarray(observation["action_mask"], dtype=bool).copy()
+    """Pack raw observation fields without neural encoder constraints."""
+    missing = set(FIELDS) - set(observation)
+
+    if missing:
+        raise ValueError(f"missing observation keys: {sorted(missing)}")
+
+    values = {}
+
+    for key, (dtype, shape) in FIELDS.items():
+        raw = np.asarray(observation[key])
+
+        if raw.shape != shape:
+            raise ValueError(f"{key} has shape {raw.shape}, expected {shape}")
+
+        if raw.dtype.kind not in "biu":
+            raise ValueError(f"{key} must contain integer or boolean values")
+
+        target_dtype = np.dtype(dtype)
+
+        if raw.dtype.kind == "i" and target_dtype.kind == "u" and np.any(raw < 0):
+            raise ValueError(f"{key} cannot contain negative values")
+
+        if target_dtype.kind == "u" and np.any(raw > np.iinfo(target_dtype).max):
+            raise ValueError(f"{key} exceeds {target_dtype} bounds")
+
+        if target_dtype.kind == "b" and np.any((raw != 0) & (raw != 1)):
+            raise ValueError(f"{key} must contain only 0 or 1")
+
+        values[key] = raw.astype(target_dtype, copy=True)
+
     return values
 
 
